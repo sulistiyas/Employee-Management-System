@@ -13,17 +13,17 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->id('attendance_id');
-            $table->foreignId('employee_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('employee_id')->references('employee_id')->on('employees')->cascadeOnDelete();
             $table->date('attendance_date');
             $table->time('check_in')->nullable();
             $table->time('check_out')->nullable();
             $table->integer('late_minutes')->default(0);
             $table->integer('work_minutes')->default(0);
-            $table->string('attendance_status');
+            $table->string('attendance_status'); // e.g. present, absent, late, permit
             $table->text('notes')->nullable();
             $table->timestamps();
 
-            $table->unique(['employee_id','attendance_date']);
+            $table->unique(['employee_id', 'attendance_date']);
         });
     }
 

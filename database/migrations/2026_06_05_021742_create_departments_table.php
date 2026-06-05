@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->foreignId('manager_employee_id')->nullable();
+            // $table->foreignId('manager_employee_id')->nullable();
             $table->timestamps();
         });
     }

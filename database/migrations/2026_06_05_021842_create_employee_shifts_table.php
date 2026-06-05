@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('employee_shifts', function (Blueprint $table) {
             $table->id('employee_shift_id');
-            $table->foreignId('employee_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('shift_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('employee_id')->references('employee_id')->on('employees')->cascadeOnDelete();
+            $table->foreignId('shift_id')->references('shift_id')->on('shifts')->restrictOnDelete();
             $table->date('effective_date');
             $table->timestamps();
 
-            $table->unique(['employee_id','shift_id','effective_date']);
+            $table->unique(['employee_id', 'shift_id', 'effective_date']);
         });
     }
 

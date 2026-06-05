@@ -14,15 +14,15 @@ return new class extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->id('employee_id');
             $table->string('employee_number')->unique();
-            $table->foreignId('department_id')->constrained()->restrictOnDelete();
-            $table->foreignId('position_id')->constrained()->restrictOnDelete();
+            $table->foreignId('department_id')->references('department_id')->on('departments')->restrictOnDelete();
+            $table->foreignId('position_id')->references('position_id')->on('positions')->restrictOnDelete();
             $table->string('full_name');
-            $table->string('gender',20);
-            $table->date('birth_date')->nullable();
+            $table->string('gender');
+            $table->date('birth_date');
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
             $table->date('join_date');
-            $table->string('employment_status');
+            $table->string('employment_status'); // e.g. active, resigned, terminated
             $table->string('photo')->nullable();
             $table->timestamps();
         });
