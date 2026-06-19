@@ -7,35 +7,64 @@ use Illuminate\Support\Facades\DB;
 
 class PositionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $departmentId = DB::table('departments')->where('code', 'GEN')->value('department_id');
-
-        if (! $departmentId) {
-            $departmentId = DB::table('departments')->insertGetId([
-                'code' => 'GEN',
-                'name' => 'General',
-                'description' => 'General fallback department',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],'department_id');
-        }
+        $departments = DB::table('departments')
+            ->pluck('department_id', 'code');
 
         $positions = [
-            ['name' => 'staff', 'level' => 'Staff'],
-            ['name' => 'supervisor', 'level' => 'Supervisor'],
-            ['name' => 'manager', 'level' => 'Manager'],
-            ['name' => 'director', 'level' => 'Director'],
+
+            // IT
+            [
+                'department_id' => $departments['IT'],
+                'name' => 'it-director',
+                'level' => 'Director',
+            ],
+            [
+                'department_id' => $departments['IT'],
+                'name' => 'it-manager',
+                'level' => 'Manager',
+            ],
+            [
+                'department_id' => $departments['IT'],
+                'name' => 'it-staff',
+                'level' => 'Staff',
+            ],
+
+            // HR
+            [
+                'department_id' => $departments['HR'],
+                'name' => 'hr-manager',
+                'level' => 'Manager',
+            ],
+            [
+                'department_id' => $departments['HR'],
+                'name' => 'hr-officer',
+                'level' => 'Staff',
+            ],
+
+            // FIN
+            [
+                'department_id' => $departments['FIN'],
+                'name' => 'finance-staff',
+                'level' => 'Staff',
+            ],
+
+            // OPS
+            [
+                'department_id' => $departments['OPS'],
+                'name' => 'operations-staff',
+                'level' => 'Staff',
+            ],
         ];
 
         foreach ($positions as $position) {
             DB::table('positions')->updateOrInsert(
-                ['name' => $position['name']],
+                [
+                    'department_id' => $position['department_id'],
+                    'name' => $position['name'],
+                ],
                 array_merge($position, [
-                    'department_id' => $departmentId,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ])
