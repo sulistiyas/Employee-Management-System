@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\SuperAdmin\DashboardController;
+use App\Http\Controllers\SuperAdmin\RoleController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -45,7 +46,10 @@ Route::middleware('auth')->group(function () {
             // Route::patch('leave-requests/{leave_request}/reject', [LeaveRequestController::class, 'reject'])->name('leave-requests.reject');
             // Route::resource('leave-types', LeaveTypeController::class);
             // Route::resource('users', UserController::class);
-            // Route::resource('roles', RoleController::class);
+            Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+            Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
+            Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+            Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
             // Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
             // Route::get('/settings', [SettingController::class, 'index'])->name('settings');
         });

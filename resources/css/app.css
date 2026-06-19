@@ -1404,3 +1404,252 @@ input, textarea, select {
         grid-template-columns: 1fr;
     }
 }
+
+/* ============================================================
+   Data Table (reusable untuk halaman CRUD: Roles, dll)
+   ============================================================ */
+.ems-table-wrap {
+    overflow-x: auto;
+}
+
+.ems-card--flush .ems-card__body {
+    padding: 0;
+}
+
+.ems-table__th-right {
+    text-align: right;
+}
+
+.ems-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ems-table thead th {
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ems-slate-400);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--ems-border);
+    white-space: nowrap;
+}
+
+.ems-table tbody td {
+    padding: 12px 14px;
+    font-size: 13.5px;
+    color: var(--ems-slate-700);
+    border-bottom: 1px solid var(--ems-slate-50);
+    vertical-align: middle;
+}
+
+.ems-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.ems-table tbody tr:hover {
+    background: var(--ems-slate-50);
+}
+
+.ems-table__name {
+    font-weight: 600;
+    color: var(--ems-slate-800);
+}
+
+.ems-table__muted {
+    color: var(--ems-slate-400);
+}
+
+.ems-table__actions {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+/* ============================================================
+   Buttons (tambahan varian: primary, danger)
+   ============================================================ */
+.ems-btn--primary {
+    background: var(--ems-blue-600);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: var(--ems-radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s ease;
+}
+
+.ems-btn--primary:hover {
+    background: var(--ems-blue-700);
+}
+
+.ems-icon-btn--edit {
+    background: var(--ems-blue-50);
+    color: var(--ems-blue-600);
+}
+
+.ems-icon-btn--edit:hover {
+    background: var(--ems-blue-100);
+}
+
+.ems-icon-btn--delete {
+    background: rgba(239, 68, 68, 0.08);
+    color: var(--ems-danger);
+}
+
+.ems-icon-btn--delete:hover {
+    background: rgba(239, 68, 68, 0.16);
+}
+
+.ems-btn-delete-confirm {
+    background: var(--ems-danger);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: var(--ems-radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.15s ease;
+}
+
+.ems-btn-delete-confirm:hover {
+    background: #dc2626;
+}
+
+/* ============================================================
+   Modal (reusable untuk halaman CRUD: Roles, dll)
+   ============================================================ */
+.ems-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 31, 61, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.ems-modal {
+    background: var(--ems-card-bg);
+    border-radius: var(--ems-radius);
+    box-shadow: var(--ems-shadow-md);
+    width: 100%;
+    max-width: 440px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+}
+
+.ems-modal--sm {
+    max-width: 380px;
+}
+
+.ems-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--ems-border);
+}
+
+.ems-modal__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ems-slate-800);
+}
+
+.ems-modal__close {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--ems-radius-sm);
+    color: var(--ems-slate-400);
+    transition: background 0.15s, color 0.15s;
+}
+
+.ems-modal__close:hover {
+    background: var(--ems-slate-100);
+    color: var(--ems-slate-700);
+}
+
+.ems-modal__body {
+    padding: 20px;
+}
+
+.ems-modal__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--ems-border);
+}
+
+/* ============================================================
+   Form (reusable untuk halaman CRUD: Roles, dll)
+   ============================================================ */
+.ems-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.ems-form-group:last-child {
+    margin-bottom: 0;
+}
+
+.ems-form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ems-slate-700);
+}
+
+.ems-form-control {
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 13.5px;
+    font-family: inherit;
+    color: var(--ems-slate-800);
+    background: var(--ems-slate-50);
+    border: 1.5px solid var(--ems-border);
+    border-radius: var(--ems-radius-sm);
+    outline: none;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.ems-form-control:hover {
+    border-color: var(--ems-slate-300);
+}
+
+.ems-form-control:focus {
+    background: #fff;
+    border-color: var(--ems-blue-500);
+    box-shadow: 0 0 0 3px var(--ems-blue-50);
+}
+
+.ems-form-control.is-invalid {
+    border-color: var(--ems-danger);
+    background: rgba(239, 68, 68, 0.04);
+}
+
+textarea.ems-form-control {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.ems-form-error {
+    font-size: 12px;
+    color: var(--ems-danger);
+}
+
+.ems-form-hint {
+    font-size: 12px;
+    color: var(--ems-slate-400);
+}
