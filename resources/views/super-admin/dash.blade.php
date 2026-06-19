@@ -86,7 +86,8 @@
                     <h2 class="ems-card__title">Today's Attendance</h2>
                     <p class="ems-card__subtitle">{{ now()->format('d F Y') }}</p>
                 </div>
-                <a href="{{ route('superadmin.attendances.index') }}" class="ems-btn ems-btn--ghost ems-btn--sm">
+                <a href="#" class="ems-btn ems-btn--ghost ems-btn--sm">
+                {{-- <a href="{{ route('superadmin.attendances.index') }}" class="ems-btn ems-btn--ghost ems-btn--sm"> --}}
                     View all
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                 </a>
@@ -162,25 +163,29 @@
                 </div>
                 <div class="ems-card__body">
                     <div class="ems-quick-actions">
-                        <a href="{{ route('superadmin.employees.create') }}" class="ems-quick-action">
+                        <a href="#" class="ems-quick-action">
+                        {{-- <a href="{{ route('superadmin.employees.create') }}" class="ems-quick-action"> --}}
                             <div class="ems-quick-action__icon ems-quick-action__icon--blue">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
                             </div>
                             <span>Add Employee</span>
                         </a>
-                        <a href="{{ route('superadmin.leave-requests.index') }}" class="ems-quick-action">
+                        <a href="#" class="ems-quick-action">
+                        {{-- <a href="{{ route('superadmin.leave-requests.index') }}" class="ems-quick-action"> --}}
                             <div class="ems-quick-action__icon ems-quick-action__icon--indigo">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                             </div>
                             <span>Leave Requests</span>
                         </a>
-                        <a href="{{ route('superadmin.attendances.index') }}" class="ems-quick-action">
+                        <a href="#" class="ems-quick-action">
+                        {{-- <a href="{{ route('superadmin.attendances.index') }}" class="ems-quick-action"> --}}
                             <div class="ems-quick-action__icon ems-quick-action__icon--sky">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                             </div>
                             <span>Attendance</span>
                         </a>
-                        <a href="{{ route('superadmin.departments.create') }}" class="ems-quick-action">
+                        <a href="#" class="ems-quick-action">
+                        {{-- <a href="{{ route('superadmin.departments.create') }}" class="ems-quick-action"> --}}
                             <div class="ems-quick-action__icon ems-quick-action__icon--slate">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                             </div>
@@ -194,7 +199,8 @@
             <div class="ems-card">
                 <div class="ems-card__header">
                     <h2 class="ems-card__title">Pending Approvals</h2>
-                    <a href="{{ route('superadmin.leave-requests.index') }}" class="ems-btn ems-btn--ghost ems-btn--sm">
+                    <a href="#" class="ems-btn ems-btn--ghost ems-btn--sm">
+                    {{-- <a href="{{ route('superadmin.leave-requests.index') }}" class="ems-btn ems-btn--ghost ems-btn--sm"> --}}
                         View all
                     </a>
                 </div>
@@ -209,14 +215,16 @@
                                 <span class="ems-leave-item__meta">{{ $leave->leaveType->name ?? '-' }} · {{ $leave->total_days }} day(s)</span>
                             </div>
                             <div class="ems-leave-item__actions">
-                                <form method="POST" action="{{ route('superadmin.leave-requests.approve', $leave->leave_request_id) }}" style="display:inline">
+                                <form method="POST" action="#" style="display:inline">
+                                {{-- <form method="POST" action="{{ route('superadmin.leave-requests.approve', $leave->leave_request_id) }}" style="display:inline"> --}}
                                     @csrf
                                     @method('PATCH')
                                     <button type="submit" class="ems-icon-btn ems-icon-btn--approve" title="Approve">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                                     </button>
                                 </form>
-                                <form method="POST" action="{{ route('superadmin.leave-requests.reject', $leave->leave_request_id) }}" style="display:inline">
+                                <form method="POST" action="#" style="display:inline">
+                                {{-- <form method="POST" action="{{ route('superadmin.leave-requests.reject', $leave->leave_request_id) }}" style="display:inline"> --}}
                                     @csrf
                                     @method('PATCH')
                                     <button type="submit" class="ems-icon-btn ems-icon-btn--reject" title="Reject">
@@ -245,7 +253,8 @@
         <div class="ems-card">
             <div class="ems-card__header">
                 <h2 class="ems-card__title">Department Overview</h2>
-                <a href="{{ route('superadmin.departments.index') }}" class="ems-btn ems-btn--ghost ems-btn--sm">View all</a>
+                <a href="#" class="ems-btn ems-btn--ghost ems-btn--sm">View all</a>
+                {{-- <a href="{{ route('superadmin.departments.index') }}" class="ems-btn ems-btn--ghost ems-btn--sm">View all</a> --}}
             </div>
             <div class="ems-card__body">
                 @forelse ($departments ?? [] as $dept)
@@ -273,7 +282,8 @@
         <div class="ems-card">
             <div class="ems-card__header">
                 <h2 class="ems-card__title">Recent Employees</h2>
-                <a href="{{ route('superadmin.employees.index') }}" class="ems-btn ems-btn--ghost ems-btn--sm">View all</a>
+                <a href="#" class="ems-btn ems-btn--ghost ems-btn--sm">View all</a>
+                {{-- <a href="{{ route('superadmin.employees.index') }}" class="ems-btn ems-btn--ghost ems-btn--sm">View all</a> --}}
             </div>
             <div class="ems-card__body">
                 @forelse ($recentEmployees ?? [] as $employee)

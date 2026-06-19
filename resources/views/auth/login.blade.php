@@ -11,8 +11,8 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet">
 
-    <!-- Vite: login.css only (tidak load app.css / layout) -->
-    @vite('resources/css/login.css')
+    <!-- Vite: login.css + app.js (Alpine terpusat) -->
+    @vite(['resources/css/login.css', 'resources/js/app.js'])
 </head>
 <body>
 
@@ -46,7 +46,7 @@
 
         {{-- Form Login --}}
         <form action="{{ route('login') }}" method="POST" class="login-form" id="loginForm"
-              x-data="loginForm()">
+              x-data="loginForm()" @submit="handleSubmit">
             @csrf
 
             {{-- Email --}}
@@ -138,7 +138,6 @@
                 class="btn-login"
                 :class="{ loading: isSubmitting }"
                 :disabled="isSubmitting"
-                @click="handleSubmit"
             >
                 <span class="spinner"></span>
                 <span class="btn-text">Masuk</span>
@@ -152,25 +151,6 @@
 
     </div>
 </div>
-
-{{-- Alpine.js CDN untuk halaman login (tidak bergantung pada app.js / bundle utama) --}}
-{{-- Catatan: jika app.js sudah di-bundle dengan Alpine, hapus baris ini dan load via @vite('resources/js/app.js') --}}
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-<script>
-    function loginForm() {
-        return {
-            showPassword: false,
-            isSubmitting: false,
-
-            handleSubmit() {
-                this.isSubmitting = true;
-                // Form submit berjalan normal (POST ke server)
-                // isSubmitting akan direset otomatis setelah page reload
-            },
-        };
-    }
-</script>
 
 </body>
 </html>

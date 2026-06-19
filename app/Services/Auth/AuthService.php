@@ -41,7 +41,7 @@ class AuthService
         $slug = $user->role?->slug ?? 'staff';
 
         return match ($slug) {
-            'super-admin' => 'dashboard.super-admin',
+            'super-admin' => 'super-admin.dashboard',
             'director'    => 'dashboard.director',
             'manager'     => 'dashboard.manager',
             'hr'          => 'dashboard.hr',
