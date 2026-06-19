@@ -19,7 +19,7 @@ class RoleController extends Controller
         $roles = $this->roleService->getAllRoles($request->query('search'));
 
         if ($request->ajax()) {
-            return view('super-admin.roles.partials.table', [
+            return view('super-admin.roles.table', [   // <-- hapus '.partials', samain sama path file aslinya
                 'roles' => $roles,
             ]);
         }
