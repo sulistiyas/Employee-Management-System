@@ -14,6 +14,17 @@ export default function roleManager() {
             name: '',
         },
 
+        isLoadingTable: false,
+        searchQuery: '',
+
+        init() {
+            this.searchQuery = new URLSearchParams(window.location.search).get('search') || '';
+
+            window.addEventListener('popstate', () => {
+                this.loadTable(window.location.href);
+            });
+        },
+
         openCreate() {
             this.mode = 'create';
             this.form = {
@@ -58,6 +69,52 @@ export default function roleManager() {
                 .trim()
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/(^-|-$)/g, '');
+        },
+
+        handleSearch() {
+            const url = new URL(window.location.href);
+
+            if (this.searchQuery) {
+                url.searchParams.set('search', this.searchQuery);
+            } else {
+                url.searchParams.delete('search');
+            }
+            url.searchParams.delete('page');
+
+            this.loadTable(url.toString());
+        },
+
+        clearSearch() {
+            this.searchQuery = '';
+            this.handleSearch();
+        },
+
+        handlePaginationClick(event) {
+            const link = event.target.closest('.ems-pagination__btn[href]');
+
+            if (!link) {
+                return;
+            }
+
+            event.preventDefault();
+            this.loadTable(link.href);
+        },
+
+        loadTable(url) {
+            this.isLoadingTable = true;
+
+            window.axios
+                .get(url)
+                .then((response) => {
+                    document.getElementById('roleTableContainer').innerHTML = response.data;
+                    window.history.pushState({}, '', url);
+                })
+                .catch(() => {
+                    window.location.href = url;
+                })
+                .finally(() => {
+                    this.isLoadingTable = false;
+                });
         },
     };
 }

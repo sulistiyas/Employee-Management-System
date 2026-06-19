@@ -7,16 +7,25 @@ use App\Http\Requests\RoleRequest;
 use App\Models\Roles;
 use App\Services\SuperAdmin\RoleService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class RoleController extends Controller
 {
     public function __construct(private RoleService $roleService) {}
 
-    public function index(): View
+    public function index(Request $request): View
     {
+        $roles = $this->roleService->getAllRoles($request->query('search'));
+
+        if ($request->ajax()) {
+            return view('super-admin.roles.partials.table', [
+                'roles' => $roles,
+            ]);
+        }
+
         return view('super-admin.roles.index', [
-            'roles' => $this->roleService->getAllRoles(),
+            'roles' => $roles,
         ]);
     }
 

@@ -4,15 +4,15 @@ namespace App\Services\SuperAdmin;
 
 use App\Models\Roles;
 use App\Repositories\SuperAdmin\RoleRepository;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class RoleService
 {
     public function __construct(private RoleRepository $roleRepository) {}
 
-    public function getAllRoles(): Collection
+    public function getAllRoles(?string $search = null): LengthAwarePaginator
     {
-        return $this->roleRepository->getAll();
+        return $this->roleRepository->getAll($search);
     }
 
     public function findRole(int $roleId): ?Roles

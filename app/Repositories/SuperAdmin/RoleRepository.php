@@ -3,15 +3,23 @@
 namespace App\Repositories\SuperAdmin;
 
 use App\Models\Roles;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class RoleRepository
 {
-    public function getAll(): Collection
+    public function getAll(?string $search = null, int $perPage = 10): LengthAwarePaginator
     {
         return Roles::withCount('users')
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('slug', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+                });
+            })
             ->orderBy('name')
-            ->get();
+            ->paginate($perPage)
+            ->withQueryString();
     }
 
     public function findById(int $roleId): ?Roles
