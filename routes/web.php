@@ -45,16 +45,19 @@ Route::middleware('auth')->group(function () {
             Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
             Route::put('/departments/{department}', [DepartmentController::class, 'update'])->name('departments.update');
             Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
+            Route::delete('/departments-bulk', [DepartmentController::class, 'bulkDestroy'])->name('departments.bulk-destroy');
 
             Route::get('/positions', [PositionController::class, 'index'])->name('positions.index');
             Route::post('/positions', [PositionController::class, 'store'])->name('positions.store');
             Route::put('/positions/{position}', [PositionController::class, 'update'])->name('positions.update');
             Route::delete('/positions/{position}', [PositionController::class, 'destroy'])->name('positions.destroy');
+            Route::delete('/positions-bulk', [PositionController::class, 'bulkDestroy'])->name('positions.bulk-destroy');
 
             Route::get('/users', [UserController::class, 'index'])->name('users.index');
             Route::post('/users', [UserController::class, 'store'])->name('users.store');
             Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
             Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+            Route::delete('/users-bulk', [UserController::class, 'bulkDestroy'])->name('users.bulk-destroy');
 
             Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
             Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');

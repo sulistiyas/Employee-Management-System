@@ -22,22 +22,25 @@
 
         {{-- Table --}}
         <div class="ems-card ems-card--flush" @click="handlePaginationClick($event)">
-            <div class="ems-table-toolbar">
-                <div class="ems-search-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ems-search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
 
-                    <input
-                        type="text"
-                        class="ems-search-input"
-                        placeholder="Cari nama posisi atau level..."
-                        x-model="searchQuery"
-                        @input.debounce.400ms="handleSearch()"
-                    >
-
+            {{-- Toolbar: search + per-page --}}
+            <div class="ems-dt-toolbar">
+                <div class="ems-dt-toolbar__left">
+                    <div class="ems-dt-search">
+                        <span class="ems-dt-search__icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        </span>
+                        <input
+                            type="text"
+                            class="ems-dt-search__input"
+                            placeholder="Cari nama posisi atau level..."
+                            x-model="searchQuery"
+                            @input.debounce.400ms="handleSearch()"
+                        >
+                    </div>
                     <span x-show="isLoadingTable" x-cloak class="ems-search-spinner">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="ems-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
                     </span>
-
                     <button
                         type="button"
                         x-show="!isLoadingTable && searchQuery"
@@ -49,7 +52,34 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                 </div>
+
+                <div class="ems-dt-toolbar__right">
+                    <div class="ems-dt-perpage">
+                        <label for="pos_per_page">Tampilkan</label>
+                        <select id="pos_per_page" class="ems-dt-perpage__select" x-model="perPage" @change="changePerPage()">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                </div>
             </div>
+
+            {{-- Bulk action bar --}}
+            <div class="ems-dt-bulk" x-show="selectedCount > 0" x-cloak>
+                <span class="ems-dt-bulk__count"><span x-text="selectedCount"></span> posisi terpilih</span>
+                <button type="button" class="ems-dt-bulk__btn ems-dt-bulk__btn--danger" @click="deleteSelected()">
+                    Hapus Terpilih
+                </button>
+            </div>
+
+            <form id="bulk-delete-form" method="POST" action="{{ route('super-admin.positions.bulk-destroy') }}">
+                @csrf
+                @method('DELETE')
+                <template x-for="id in selected" :key="id">
+                    <input type="hidden" name="position_ids[]" :value="id">
+                </template>
+            </form>
 
             <div class="ems-card__body">
                 <div id="positionTableContainer" :class="{ 'ems-table-loading': isLoadingTable }">
@@ -57,8 +87,6 @@
                 </div>
             </div>
         </div>
-
-        <x-pagination :paginator="$positions" />
 
         {{-- Modal: Create / Edit --}}
         <div class="ems-modal-overlay" x-show="showFormModal" x-cloak @keydown.escape.window="closeFormModal()">

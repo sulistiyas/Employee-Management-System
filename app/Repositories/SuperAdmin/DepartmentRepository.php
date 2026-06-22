@@ -43,4 +43,17 @@ class DepartmentRepository
     {
         return $department->delete();
     }
+
+    /**
+     * Hapus banyak department sekaligus berdasarkan ID.
+     * Department yang masih memiliki employees dilewati (tidak ikut dihapus).
+     */
+    public function deleteMany(array $departmentIds): int
+    {
+        return Departments::whereIn('department_id', $departmentIds)
+            ->whereDoesntHave('employees')
+            ->get()
+            ->each(fn (Departments $department) => $department->delete())
+            ->count();
+    }
 }

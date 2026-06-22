@@ -1,17 +1,61 @@
-<div class="ems-table-wrap">
-    <table class="ems-table">
+<div class="ems-dt-wrap">
+    <table class="ems-dt">
         <thead>
             <tr>
-                <th>Nama User</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
+                <th class="ems-dt__checkbox">
+                    <input type="checkbox" class="ems-dt__check" @change="toggleAll($event)" :checked="allSelected">
+                </th>
+                <th>
+                    <span class="ems-dt__sort" @click="sortBy('name')">
+                        Nama User
+                        <span class="ems-dt__sort-icon" :class="getSortClass('name')">
+                            <svg class="ems-dt__sort-up" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6l6 8H6z"/></svg>
+                            <svg class="ems-dt__sort-down" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l-6-8h12z"/></svg>
+                        </span>
+                    </span>
+                </th>
+                <th>
+                    <span class="ems-dt__sort" @click="sortBy('email')">
+                        Email
+                        <span class="ems-dt__sort-icon" :class="getSortClass('email')">
+                            <svg class="ems-dt__sort-up" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6l6 8H6z"/></svg>
+                            <svg class="ems-dt__sort-down" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l-6-8h12z"/></svg>
+                        </span>
+                    </span>
+                </th>
+                <th>
+                    <span class="ems-dt__sort" @click="sortBy('role')">
+                        Role
+                        <span class="ems-dt__sort-icon" :class="getSortClass('role')">
+                            <svg class="ems-dt__sort-up" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6l6 8H6z"/></svg>
+                            <svg class="ems-dt__sort-down" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l-6-8h12z"/></svg>
+                        </span>
+                    </span>
+                </th>
+                <th>
+                    <span class="ems-dt__sort" @click="sortBy('is_active')">
+                        Status
+                        <span class="ems-dt__sort-icon" :class="getSortClass('is_active')">
+                            <svg class="ems-dt__sort-up" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6l6 8H6z"/></svg>
+                            <svg class="ems-dt__sort-down" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l-6-8h12z"/></svg>
+                        </span>
+                    </span>
+                </th>
                 <th class="ems-table__th-right">Aksi</th>
             </tr>
         </thead>
         <tbody>
             @forelse ($users as $user)
                 <tr>
+                    <td class="ems-dt__checkbox">
+                        <input
+                            type="checkbox"
+                            class="ems-dt__check"
+                            :value="{{ $user->id }}"
+                            x-model="selected"
+                            @change="updateCount()"
+                        >
+                    </td>
                     <td class="ems-table__name">{{ $user->name }}</td>
                     <td class="ems-table__muted">{{ $user->email }}</td>
                     <td>
@@ -25,10 +69,10 @@
                         @endif
                     </td>
                     <td>
-                        <div class="ems-table__actions">
+                        <div class="ems-dt-actions">
                             <button
                                 type="button"
-                                class="ems-icon-btn ems-icon-btn--edit"
+                                class="ems-dt-action ems-dt-action--edit"
                                 title="Edit"
                                 @click="openEdit({
                                     id: {{ $user->id }},
@@ -43,7 +87,7 @@
                             </button>
                             <button
                                 type="button"
-                                class="ems-icon-btn ems-icon-btn--delete"
+                                class="ems-dt-action ems-dt-action--delete"
                                 title="Hapus"
                                 @click="openDelete({
                                     id: {{ $user->id }},
@@ -57,10 +101,12 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5">
-                        <div class="ems-empty">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                            <p>
+                    <td colspan="6">
+                        <div class="ems-dt__empty">
+                            <div class="ems-dt__empty-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            </div>
+                            <p class="ems-dt__empty-text">
                                 @if (request('search'))
                                     User tidak ditemukan untuk pencarian "{{ request('search') }}"
                                 @else
@@ -75,4 +121,10 @@
     </table>
 </div>
 
-<x-pagination :paginator="$users" />
+<div class="ems-dt-footer">
+    <div class="ems-dt-info">
+        Menampilkan <strong>{{ $users->firstItem() ?? 0 }}</strong>-<strong>{{ $users->lastItem() ?? 0 }}</strong>
+        dari <strong>{{ $users->total() }}</strong> user
+    </div>
+    <x-pagination :paginator="$users" />
+</div>

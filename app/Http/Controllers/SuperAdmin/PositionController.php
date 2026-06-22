@@ -64,4 +64,20 @@ class PositionController extends Controller
             ->route('super-admin.positions.index')
             ->with('success', 'Posisi berhasil dihapus.');
     }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $positionIds = $request->input('position_ids', []);
+        $deletedCount = $this->positionService->deleteManyPositions($positionIds);
+
+        if ($deletedCount === 0) {
+            return redirect()
+                ->route('super-admin.positions.index')
+                ->with('error', 'Posisi tidak dapat dihapus karena masih digunakan oleh employees.');
+        }
+
+        return redirect()
+            ->route('super-admin.positions.index')
+            ->with('success', "{$deletedCount} posisi berhasil dihapus.");
+    }
 }

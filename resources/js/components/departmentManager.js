@@ -16,9 +16,15 @@ export default function departmentManager() {
 
         isLoadingTable: false,
         searchQuery: '',
+        perPage: '10',
+
+        selected: [],
+        selectedCount: 0,
+        allSelected: false,
 
         init() {
             this.searchQuery = new URLSearchParams(window.location.search).get('search') || '';
+            this.perPage = new URLSearchParams(window.location.search).get('per_page') || '10';
 
             window.addEventListener('popstate', () => {
                 this.loadTable(window.location.href);
@@ -107,7 +113,11 @@ export default function departmentManager() {
                 .get(url)
                 .then((response) => {
                     document.getElementById('departmentTableContainer').innerHTML = response.data;
+                    window.Alpine.initTree(document.getElementById('departmentTableContainer'));
                     window.history.pushState({}, '', url);
+                    this.selected = [];
+                    this.selectedCount = 0;
+                    this.allSelected = false;
                 })
                 .catch(() => {
                     window.location.href = url;
@@ -115,6 +125,29 @@ export default function departmentManager() {
                 .finally(() => {
                     this.isLoadingTable = false;
                 });
+        },
+
+        toggleAll(event) {
+            const checkboxes = document.querySelectorAll('tbody .ems-dt__check');
+            this.selected = event.target.checked
+                ? Array.from(checkboxes).map(cb => cb.value)
+                : [];
+            this.selectedCount = this.selected.length;
+            this.allSelected = event.target.checked;
+        },
+
+        updateCount() {
+            this.selectedCount = this.selected.length;
+            const allCheckboxes = document.querySelectorAll('tbody .ems-dt__check');
+            this.allSelected = this.selectedCount === allCheckboxes.length;
+        },
+
+        deleteSelected() {
+            if (this.selectedCount === 0) return;
+            if (confirm(`Hapus ${this.selectedCount} departemen terpilih? Tindakan ini tidak dapat dibatalkan.`)) {
+                const form = document.getElementById('bulk-delete-form');
+                if (form) form.submit();
+            }
         },
     };
 }

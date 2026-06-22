@@ -41,4 +41,12 @@ class PositionService
 
         return $this->positionRepository->delete($position);
     }
+
+    /**
+     * Hapus banyak position sekaligus. Mengembalikan jumlah position yang berhasil dihapus.
+     */
+    public function deleteManyPositions(array $positionIds): int
+    {
+        return $this->positionRepository->deleteMany($positionIds);
+    }
 }

@@ -43,4 +43,17 @@ class PositionRepository
     {
         return $position->delete();
     }
+
+    /**
+     * Hapus banyak position sekaligus berdasarkan ID.
+     * Position yang masih memiliki employees dilewati (tidak ikut dihapus).
+     */
+    public function deleteMany(array $positionIds): int
+    {
+        return Positions::whereIn('position_id', $positionIds)
+            ->whereDoesntHave('employees')
+            ->get()
+            ->each(fn (Positions $position) => $position->delete())
+            ->count();
+    }
 }

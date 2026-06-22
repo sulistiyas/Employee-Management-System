@@ -10,9 +10,22 @@ class UserService
 {
     public function __construct(private UserRepository $userRepository) {}
 
-    public function getAllUsers(?string $search = null): LengthAwarePaginator
-    {
-        return $this->userRepository->getAll($search);
+    public function getAllUsers(
+        ?string $search = null,
+        ?int $roleId = null,
+        ?string $isActive = null,
+        ?string $sort = null,
+        string $dir = 'asc',
+        int $perPage = 10
+    ): LengthAwarePaginator {
+        return $this->userRepository->getAll(
+            $search,
+            $roleId,
+            $isActive,
+            $sort,
+            $dir,
+            $perPage
+        );
     }
 
     public function findUser(int $userId): ?User
@@ -33,5 +46,13 @@ class UserService
     public function deleteUser(User $user): bool
     {
         return $this->userRepository->delete($user);
+    }
+
+    /**
+     * Hapus banyak user sekaligus. Mengembalikan jumlah user yang berhasil dihapus.
+     */
+    public function deleteManyUsers(array $userIds): int
+    {
+        return $this->userRepository->deleteMany($userIds);
     }
 }

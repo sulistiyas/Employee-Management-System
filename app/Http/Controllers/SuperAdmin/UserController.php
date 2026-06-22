@@ -17,7 +17,14 @@ class UserController extends Controller
 
     public function index(Request $request): View
     {
-        $users = $this->userService->getAllUsers($request->query('search'));
+        $users = $this->userService->getAllUsers(
+            search: $request->query('search'),
+            roleId: $request->query('role') ? (int) $request->query('role') : null,
+            isActive: $request->query('active'),
+            sort: $request->query('sort'),
+            dir: $request->query('dir', 'asc'),
+            perPage: (int) $request->query('per_page', 10)
+        );
         $roles = Roles::orderBy('name')->get();
 
         if ($request->ajax()) {
@@ -57,5 +64,15 @@ class UserController extends Controller
         return redirect()
             ->route('super-admin.users.index')
             ->with('success', 'User berhasil dihapus.');
+    }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $userIds = $request->input('user_ids', []);
+        $deletedCount = $this->userService->deleteManyUsers($userIds);
+
+        return redirect()
+            ->route('super-admin.users.index')
+            ->with('success', "{$deletedCount} user berhasil dihapus.");
     }
 }

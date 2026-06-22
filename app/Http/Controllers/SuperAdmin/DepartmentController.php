@@ -61,4 +61,20 @@ class DepartmentController extends Controller
             ->route('super-admin.departments.index')
             ->with('success', 'Departemen berhasil dihapus.');
     }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $departmentIds = $request->input('department_ids', []);
+        $deletedCount = $this->departmentService->deleteManyDepartments($departmentIds);
+
+        if ($deletedCount === 0) {
+            return redirect()
+                ->route('super-admin.departments.index')
+                ->with('error', 'Departemen tidak dapat dihapus karena masih digunakan oleh employees.');
+        }
+
+        return redirect()
+            ->route('super-admin.departments.index')
+            ->with('success', "{$deletedCount} departemen berhasil dihapus.");
+    }
 }

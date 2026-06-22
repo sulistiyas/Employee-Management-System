@@ -41,4 +41,12 @@ class DepartmentService
 
         return $this->departmentRepository->delete($department);
     }
+
+    /**
+     * Hapus banyak department sekaligus. Mengembalikan jumlah department yang berhasil dihapus.
+     */
+    public function deleteManyDepartments(array $departmentIds): int
+    {
+        return $this->departmentRepository->deleteMany($departmentIds);
+    }
 }

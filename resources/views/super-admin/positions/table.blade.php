@@ -1,7 +1,10 @@
-<div class="ems-table-wrap">
-    <table class="ems-table">
+<div class="ems-dt-wrap">
+    <table class="ems-dt">
         <thead>
             <tr>
+                <th class="ems-dt__checkbox">
+                    <input type="checkbox" class="ems-dt__check" @change="toggleAll($event)" :checked="allSelected">
+                </th>
                 <th>Nama Posisi</th>
                 <th>Level</th>
                 <th>Departemen</th>
@@ -12,6 +15,15 @@
         <tbody>
             @forelse ($positions as $position)
                 <tr>
+                    <td class="ems-dt__checkbox">
+                        <input
+                            type="checkbox"
+                            class="ems-dt__check"
+                            :value="{{ $position->position_id }}"
+                            x-model="selected"
+                            @change="updateCount()"
+                        >
+                    </td>
                     <td class="ems-table__name">{{ $position->name }}</td>
                     <td>
                         <span class="ems-pill ems-pill--leave">{{ $position->level }}</span>
@@ -19,10 +31,10 @@
                     <td class="ems-table__muted">{{ $position->department?->name ?? '-' }}</td>
                     <td>{{ $position->employees_count ?? 0 }}</td>
                     <td>
-                        <div class="ems-table__actions">
+                        <div class="ems-dt-actions">
                             <button
                                 type="button"
-                                class="ems-icon-btn ems-icon-btn--edit"
+                                class="ems-dt-action ems-dt-action--edit"
                                 title="Edit"
                                 @click="openEdit({
                                     position_id: {{ $position->position_id }},
@@ -35,7 +47,7 @@
                             </button>
                             <button
                                 type="button"
-                                class="ems-icon-btn ems-icon-btn--delete"
+                                class="ems-dt-action ems-dt-action--delete"
                                 title="Hapus"
                                 @click="openDelete({
                                     position_id: {{ $position->position_id }},
@@ -49,10 +61,12 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5">
-                        <div class="ems-empty">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                            <p>
+                    <td colspan="6">
+                        <div class="ems-dt__empty">
+                            <div class="ems-dt__empty-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            </div>
+                            <p class="ems-dt__empty-text">
                                 @if (request('search'))
                                     Posisi tidak ditemukan untuk pencarian "{{ request('search') }}"
                                 @else
@@ -67,4 +81,10 @@
     </table>
 </div>
 
-<x-pagination :paginator="$positions" />
+<div class="ems-dt-footer">
+    <div class="ems-dt-info">
+        Menampilkan <strong>{{ $positions->firstItem() ?? 0 }}</strong>-<strong>{{ $positions->lastItem() ?? 0 }}</strong>
+        dari <strong>{{ $positions->total() }}</strong> posisi
+    </div>
+    <x-pagination :paginator="$positions" />
+</div>
