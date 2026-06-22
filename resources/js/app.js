@@ -1,5 +1,12 @@
 import './bootstrap';
 import Alpine from 'alpinejs';
+import roleManager from './components/roleManager';
+import departmentManager from './components/departmentManager';
+import positionManager from './components/positionManager';
+import userManager from './components/userManager';
+import employeeManager from './components/employeeManager';
+
+import datatableFilter from './datatableFilter';
 
 Alpine.data('appLayout', () => ({
     sidebarOpen: window.innerWidth >= 1024,
@@ -19,6 +26,14 @@ Alpine.data('loginForm', () => ({
         // isSubmitting akan direset otomatis setelah page reload
     },
 }));
+
+Alpine.data('roleManager', roleManager);
+Alpine.data('departmentManager', departmentManager);
+Alpine.data('positionManager', positionManager);
+Alpine.data('userManager', userManager);
+Alpine.data('employeeManager', employeeManager);
+
+Alpine.data('datatableFilter', datatableFilter);
 
 window.Alpine = Alpine;
 Alpine.start();

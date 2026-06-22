@@ -12,6 +12,12 @@ class Departments extends Model
 
     protected $primaryKey = 'department_id';
 
+    protected $fillable = [
+        'name',
+        'code',
+        'description',
+    ];
+
     public function departmentManager(): BelongsTo
     {
         return $this->belongsTo(Employees::class, 'manager_employee_id', 'employee_id');

@@ -13,6 +13,20 @@ class Employees extends Model
 
     protected $primaryKey = 'employee_id';
 
+    protected $fillable = [
+        'employee_number',
+        'full_name',
+        'gender',
+        'birth_date',
+        'phone',
+        'address',
+        'join_date',
+        'employment_status',
+        'department_id',
+        'position_id',
+        'photo',
+    ];
+
     public function department(): BelongsTo
     {
         return $this->belongsTo(Departments::class, 'department_id', 'department_id');
