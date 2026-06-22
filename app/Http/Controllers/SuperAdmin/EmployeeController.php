@@ -18,7 +18,15 @@ class EmployeeController extends Controller
 
     public function index(Request $request): View
     {
-        $employees = $this->employeeService->getAllEmployees($request->query('search'));
+        $employees = $this->employeeService->getAllEmployees(
+            search: $request->query('search'),
+            departmentId: $request->query('department') ? (int) $request->query('department') : null,
+            positionId: $request->query('position') ? (int) $request->query('position') : null,
+            employmentStatus: $request->query('status'),
+            sort: $request->query('sort'),
+            dir: $request->query('dir', 'asc'),
+            perPage: (int) $request->query('per_page', 10)
+        );
         $departments = Departments::orderBy('name')->get();
         $positions = Positions::orderBy('name')->get();
 
@@ -66,5 +74,21 @@ class EmployeeController extends Controller
         return redirect()
             ->route('super-admin.employees.index')
             ->with('success', 'Employee berhasil dihapus.');
+    }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $employeeIds = $request->input('employee_ids', []);
+        $deletedCount = $this->employeeService->deleteManyEmployees($employeeIds);
+
+        if ($deletedCount === 0) {
+            return redirect()
+                ->route('super-admin.employees.index')
+                ->with('error', 'Employee tidak dapat dihapus karena memiliki akun user.');
+        }
+
+        return redirect()
+            ->route('super-admin.employees.index')
+            ->with('success', "{$deletedCount} employee berhasil dihapus.");
     }
 }

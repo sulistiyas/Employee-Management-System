@@ -10,9 +10,24 @@ class EmployeeService
 {
     public function __construct(private EmployeeRepository $employeeRepository) {}
 
-    public function getAllEmployees(?string $search = null): LengthAwarePaginator
-    {
-        return $this->employeeRepository->getAll($search);
+    public function getAllEmployees(
+        ?string $search = null,
+        ?int $departmentId = null,
+        ?int $positionId = null,
+        ?string $employmentStatus = null,
+        ?string $sort = null,
+        string $dir = 'asc',
+        int $perPage = 10
+    ): LengthAwarePaginator {
+        return $this->employeeRepository->getAll(
+            $search,
+            $departmentId,
+            $positionId,
+            $employmentStatus,
+            $sort,
+            $dir,
+            $perPage
+        );
     }
 
     public function findEmployee(int $employeeId): ?Employees
@@ -37,5 +52,13 @@ class EmployeeService
         }
 
         return $this->employeeRepository->delete($employee);
+    }
+
+    /**
+     * Hapus banyak employee sekaligus. Mengembalikan jumlah employee yang berhasil dihapus.
+     */
+    public function deleteManyEmployees(array $employeeIds): int
+    {
+        return $this->employeeRepository->deleteMany($employeeIds);
     }
 }

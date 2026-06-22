@@ -1,5 +1,17 @@
 @props(['paginator'])
 
+@php
+    $window = \Illuminate\Pagination\UrlWindow::make($paginator);
+
+    $elements = array_filter([
+        $window['first'],
+        is_array($window['slider']) ? '...' : null,
+        $window['slider'],
+        is_array($window['last']) ? '...' : null,
+        $window['last'],
+    ]);
+@endphp
+
 @if ($paginator->hasPages())
     <nav class="ems-pagination" role="navigation" aria-label="{{ __('Pagination Navigation') }}">
 

@@ -23,7 +23,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // ── Dashboard per Role ──
-    // Tambahkan controller yang sesuai saat modul dashboard role lain dikembangkan.
     Route::get('/dashboard/director', fn () => 'Director Dashboard')->name('dashboard.director');
     Route::get('/dashboard/manager', fn () => 'Manager Dashboard')->name('dashboard.manager');
     Route::get('/dashboard/hr', fn () => 'HR Dashboard')->name('dashboard.hr');
@@ -61,6 +60,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
             Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
             Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
+            Route::delete('/employees-bulk', [EmployeeController::class, 'bulkDestroy'])->name('employees.bulk-destroy');
             // Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
             // Route::get('/settings', [SettingController::class, 'index'])->name('settings');
         });

@@ -119,7 +119,9 @@ export default function employeeManager() {
             window.axios
                 .get(url)
                 .then((response) => {
-                    document.getElementById('employeeTableContainer').innerHTML = response.data;
+                    const container = document.getElementById('employeeTableContainer');
+                    container.innerHTML = response.data;
+                    window.Alpine.initTree(container);
                     window.history.pushState({}, '', url);
                 })
                 .catch(() => {
