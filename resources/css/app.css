@@ -2049,3 +2049,299 @@ input, textarea, select {
         padding-left: 14px;
     }
 }
+
+/* ============================================================
+   Buttons — Primary & Danger variants
+   ============================================================ */
+.ems-btn--primary {
+    background: var(--ems-blue-600);
+    color: #fff;
+    border: none;
+    box-shadow: var(--ems-shadow-sm);
+}
+
+.ems-btn--primary:hover {
+    background: var(--ems-blue-700);
+}
+
+.ems-btn-delete-confirm {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    border-radius: var(--ems-radius-sm);
+    font-size: 13.5px;
+    font-weight: 500;
+    background: var(--ems-danger);
+    color: #fff;
+    border: none;
+    transition: background 0.15s;
+}
+
+.ems-btn-delete-confirm:hover {
+    background: #dc2626;
+}
+
+/* ============================================================
+   Card — flush variant (no body padding, used with toolbar+table)
+   ============================================================ */
+.ems-card--flush {
+    padding: 20px;
+}
+
+.ems-card--flush .ems-card__body {
+    padding: 0;
+}
+
+/* ============================================================
+   Modal
+   ============================================================ */
+.ems-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 31, 61, 0.5);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+}
+
+.ems-modal {
+    width: 100%;
+    max-width: 480px;
+    max-height: calc(100vh - 40px);
+    background: var(--ems-card-bg);
+    border-radius: var(--ems-radius);
+    box-shadow: var(--ems-shadow-md);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ems-modal--sm {
+    max-width: 400px;
+}
+
+.ems-modal--lg {
+    max-width: 640px;
+}
+
+.ems-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--ems-border);
+    flex-shrink: 0;
+}
+
+.ems-modal__title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ems-slate-900);
+    letter-spacing: -0.01em;
+}
+
+.ems-modal__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--ems-radius-sm);
+    color: var(--ems-slate-400);
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+
+.ems-modal__close:hover {
+    background: var(--ems-slate-100);
+    color: var(--ems-slate-700);
+}
+
+.ems-modal__body {
+    padding: 20px 22px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.ems-modal__body p {
+    font-size: 13.5px;
+    color: var(--ems-slate-600);
+    line-height: 1.6;
+}
+
+.ems-modal__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 22px;
+    border-top: 1px solid var(--ems-border);
+    background: var(--ems-slate-50);
+    flex-shrink: 0;
+}
+
+/* ============================================================
+   Form
+   ============================================================ */
+.ems-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.ems-form-group {
+    margin-bottom: 16px;
+}
+
+.ems-form-row .ems-form-group {
+    margin-bottom: 0;
+}
+
+.ems-form-row + .ems-form-group,
+.ems-form-group + .ems-form-row {
+    margin-top: 16px;
+}
+
+.ems-form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ems-slate-700);
+    margin-bottom: 6px;
+}
+
+.ems-form-control {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--ems-border);
+    border-radius: var(--ems-radius-sm);
+    background: var(--ems-card-bg);
+    font-size: 13.5px;
+    color: var(--ems-slate-800);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    line-height: 1.4;
+}
+
+.ems-form-control::placeholder {
+    color: var(--ems-slate-400);
+}
+
+.ems-form-control:focus {
+    border-color: var(--ems-blue-500);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+textarea.ems-form-control {
+    resize: vertical;
+    min-height: 80px;
+}
+
+select.ems-form-control {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+}
+
+.ems-form-hint {
+    display: block;
+    font-size: 12px;
+    color: var(--ems-slate-400);
+    margin-top: 5px;
+    line-height: 1.4;
+}
+
+@media (max-width: 560px) {
+    .ems-form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .ems-form-row .ems-form-group {
+        margin-bottom: 16px;
+    }
+
+    .ems-form-row .ems-form-group:last-child {
+        margin-bottom: 0;
+    }
+}
+
+/* ============================================================
+   Search — loading spinner & clear button (shared by search box variants)
+   ============================================================ */
+.ems-search-spinner {
+    display: flex;
+    align-items: center;
+    color: var(--ems-blue-500);
+    flex-shrink: 0;
+}
+
+.ems-spin {
+    animation: ems-spin 0.7s linear infinite;
+}
+
+@keyframes ems-spin {
+    to { transform: rotate(360deg); }
+}
+
+.ems-search-clear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    color: var(--ems-slate-400);
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
+}
+
+.ems-search-clear:hover {
+    background: var(--ems-slate-100);
+    color: var(--ems-slate-600);
+}
+
+/* ============================================================
+   Table — loading state & cell helpers
+   ============================================================ */
+.ems-table-loading {
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 0.15s;
+}
+
+.ems-table__name {
+    font-weight: 600;
+    color: var(--ems-slate-800);
+}
+
+.ems-table__muted {
+    color: var(--ems-slate-500);
+}
+
+.ems-table__th-right {
+    text-align: right;
+}
+
+.ems-dt-actions {
+    justify-content: flex-end;
+}
+
+/* Pill — generic success/warning aliases (status labels outside attendance context) */
+.ems-pill--success {
+    background: rgba(16, 185, 129, 0.1);
+    color: #065f46;
+}
+
+.ems-pill--warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #92400e;
+}

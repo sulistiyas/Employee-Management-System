@@ -21,7 +21,7 @@
         </div>
 
         {{-- Table --}}
-        <div class="ems-card ems-card--flush" x-data="datatableFilter()" @click="handlePaginationClick($event)">
+        <div class="ems-card ems-card--flush" @click="handlePaginationClick($event)">
 
             {{-- Toolbar: search + filter toggle + per-page --}}
             <div class="ems-dt-toolbar">
@@ -78,21 +78,21 @@
 
             {{-- Collapsible filter row --}}
             <div class="ems-dt-filters" x-show="showFilters" x-cloak>
-                <select class="ems-dt-filters__select" x-model="filters.department" @change="applySearch()">
+                <select class="ems-dt-filters__select" x-model="filters.department" @change="applyFilters()">
                     <option value="">Semua Departemen</option>
                     @foreach ($departments as $dept)
                         <option value="{{ $dept->department_id }}" @selected(request('department') == $dept->department_id)>{{ $dept->name }}</option>
                     @endforeach
                 </select>
 
-                <select class="ems-dt-filters__select" x-model="filters.position" @change="applySearch()">
+                <select class="ems-dt-filters__select" x-model="filters.position" @change="applyFilters()">
                     <option value="">Semua Posisi</option>
                     @foreach ($positions as $pos)
                         <option value="{{ $pos->position_id }}" @selected(request('position') == $pos->position_id)>{{ $pos->name }}</option>
                     @endforeach
                 </select>
 
-                <select class="ems-dt-filters__select" x-model="filters.status" @change="applySearch()">
+                <select class="ems-dt-filters__select" x-model="filters.status" @change="applyFilters()">
                     <option value="">Semua Status</option>
                     <option value="Permanent" @selected(request('status') === 'Permanent')>Permanent</option>
                     <option value="Contract" @selected(request('status') === 'Contract')>Contract</option>
