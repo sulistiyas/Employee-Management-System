@@ -57,9 +57,6 @@
                 </div>
             </div>
         </div>
-
-        <x-pagination :paginator="$users" />
-
         {{-- Modal: Create / Edit --}}
         <div class="ems-modal-overlay" x-show="showFormModal" x-cloak @keydown.escape.window="closeFormModal()">
             <div class="ems-modal" @click.outside="closeFormModal()">

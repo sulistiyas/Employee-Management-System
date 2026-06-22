@@ -213,9 +213,8 @@
                                 x-model="form.employment_status"
                                 required
                             >
-                                <option value="active">Aktif</option>
-                                <option value="resigned">Resign</option>
-                                <option value="terminated">Terminated</option>
+                                <option value="Permanent">Permanent</option>
+                                <option value="Contract">Contract</option>
                             </select>
                         </div>
                     </div>

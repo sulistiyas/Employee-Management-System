@@ -18,12 +18,10 @@
                     <td class="ems-table__muted">{{ $employee->department?->name ?? '-' }}</td>
                     <td>{{ $employee->position?->name ?? '-' }}</td>
                     <td>
-                        @if ($employee->employment_status === 'active')
-                            <span class="ems-pill ems-pill--success">Aktif</span>
-                        @elseif ($employee->employment_status === 'resigned')
-                            <span class="ems-pill ems-pill--warning">Resign</span>
-                        @else
-                            <span class="ems-pill ems-pill--danger">Terminated</span>
+                        @if ($employee->employment_status === 'Permanent')
+                            <span class="ems-pill ems-pill--success">Permanent</span>
+                        @elseif ($employee->employment_status === 'Contract')
+                            <span class="ems-pill ems-pill--warning">Contract</span>
                         @endif
                     </td>
                     <td>

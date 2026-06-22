@@ -10,7 +10,7 @@ use App\Http\Controllers\SuperAdmin\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root ke login
-// Route::get('/', fn () => redirect()->route('login'))->name('home');
+Route::get('/', fn () => redirect()->route('login'))->name('home');
 
 // ─── Public Routes ────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
