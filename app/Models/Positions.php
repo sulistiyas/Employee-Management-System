@@ -12,7 +12,7 @@ class Positions extends Model
 
     protected $primaryKey = 'position_id';
 
-    public $fillable = [
+    protected $fillable = [
         'name',
         'level',
         'department_id',

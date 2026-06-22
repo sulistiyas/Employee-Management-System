@@ -37,17 +37,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
             //
-            // Route::resource('employees', EmployeeController::class);
-            // Route::resource('departments', DepartmentController::class);
-            // Route::resource('positions', PositionController::class);
-            // Route::resource('attendances', AttendanceController::class);
-            // Route::resource('shifts', ShiftController::class);
-            // Route::resource('holidays', HolidayController::class);
-            // Route::resource('leave-requests', LeaveRequestController::class);
-            // Route::patch('leave-requests/{leave_request}/approve', [LeaveRequestController::class, 'approve'])->name('leave-requests.approve');
-            // Route::patch('leave-requests/{leave_request}/reject', [LeaveRequestController::class, 'reject'])->name('leave-requests.reject');
-            // Route::resource('leave-types', LeaveTypeController::class);
-            // Route::resource('users', UserController::class);
             Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
             Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
             Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');

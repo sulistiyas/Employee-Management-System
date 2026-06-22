@@ -12,7 +12,7 @@ class Departments extends Model
 
     protected $primaryKey = 'department_id';
 
-    public $fillable = [
+    protected $fillable = [
         'name',
         'code',
         'description',
