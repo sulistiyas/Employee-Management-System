@@ -35,7 +35,7 @@
                                     name: @js($user->name),
                                     email: @js($user->email),
                                     role_id: {{ $user->role_id }},
-                                    employee_id: {{ $user->employee_id }},
+                                    employee_id: {{ $user->employee_id ?? 'null' }},
                                     is_active: {{ $user->is_active ? 'true' : 'false' }},
                                 })"
                             >

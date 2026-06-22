@@ -28,8 +28,8 @@
         <div class="ems-sidebar__section">
             <span class="ems-sidebar__section-label" x-show="sidebarOpen">HR Management</span>
 
-            <a href="#"
-            {{-- <a href="{{ route('super-admin.employees.index') }}" --}}
+            {{-- <a href="#" --}}
+            <a href="{{ route('super-admin.employees.index') }}"
                class="ems-sidebar__link {{ request()->routeIs('super-admin.employees.*') ? 'ems-sidebar__link--active' : '' }}">
                 <span class="ems-sidebar__icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -115,8 +115,7 @@
         <div class="ems-sidebar__section">
             <span class="ems-sidebar__section-label" x-show="sidebarOpen">System</span>
 
-            <a href="#"
-            {{-- <a href="{{ route('super-admin.users.index') }}" --}}
+            <a href="{{ route('super-admin.users.index') }}"
                class="ems-sidebar__link {{ request()->routeIs('super-admin.users.*') ? 'ems-sidebar__link--active' : '' }}">
                 <span class="ems-sidebar__icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
