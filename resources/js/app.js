@@ -1,6 +1,10 @@
 import './bootstrap';
 import Alpine from 'alpinejs';
 import roleManager from './components/roleManager';
+import departmentManager from './components/departmentManager';
+import positionManager from './components/positionManager';
+import userManager from './components/userManager';
+import employeeManager from './components/employeeManager';
 
 Alpine.data('appLayout', () => ({
     sidebarOpen: window.innerWidth >= 1024,
@@ -22,6 +26,10 @@ Alpine.data('loginForm', () => ({
 }));
 
 Alpine.data('roleManager', roleManager);
+Alpine.data('departmentManager', departmentManager);
+Alpine.data('positionManager', positionManager);
+Alpine.data('userManager', userManager);
+Alpine.data('employeeManager', employeeManager);
 
 window.Alpine = Alpine;
 Alpine.start();
