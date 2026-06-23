@@ -21,7 +21,7 @@ class UserRequest extends FormRequest
             'email'       => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId, 'id')],
             'password'    => [$this->isMethod('post') ? 'required' : 'nullable', 'string', 'min:8'],
             'role_id'     => ['required', 'integer', 'exists:roles,role_id'],
-            'employee_id' => ['nullable', 'integer', 'exists:employees,employee_id'],
+            'employee_id' => ['nullable', 'integer', 'exists:employees,employee_id', Rule::unique('users', 'employee_id')->ignore($userId, 'id')],
             'is_active'   => ['boolean'],
         ];
     }
@@ -37,6 +37,8 @@ class UserRequest extends FormRequest
             'password.min'      => 'Password minimal 8 karakter.',
             'role_id.required'  => 'Role wajib dipilih.',
             'role_id.exists'    => 'Role yang dipilih tidak valid.',
+            'employee_id.exists' => 'Data karyawan yang dipilih tidak valid.',
+            'employee_id.unique' => 'Karyawan ini sudah memiliki akun user.',
         ];
     }
 

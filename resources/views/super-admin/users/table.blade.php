@@ -80,6 +80,7 @@
                                     email: @js($user->email),
                                     role_id: {{ $user->role_id }},
                                     employee_id: {{ $user->employee_id ?? 'null' }},
+                                    employee_full_name: @js($user->employee?->full_name),
                                     is_active: {{ $user->is_active ? 'true' : 'false' }},
                                 })"
                             >

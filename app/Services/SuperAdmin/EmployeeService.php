@@ -4,6 +4,7 @@ namespace App\Services\SuperAdmin;
 
 use App\Models\Employees;
 use App\Repositories\SuperAdmin\EmployeeRepository;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class EmployeeService
@@ -33,6 +34,17 @@ class EmployeeService
     public function findEmployee(int $employeeId): ?Employees
     {
         return $this->employeeRepository->findById($employeeId);
+    }
+
+    /**
+     * Ambil daftar employee yang belum memiliki akun user, untuk dropdown
+     * pembuatan akun login pada modul User.
+     *
+     * @return Collection<int, Employees>
+     */
+    public function getAvailableEmployees(): Collection
+    {
+        return $this->employeeRepository->getAvailableForUser();
     }
 
     public function createEmployee(array $data): Employees

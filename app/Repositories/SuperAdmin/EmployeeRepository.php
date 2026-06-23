@@ -3,6 +3,7 @@
 namespace App\Repositories\SuperAdmin;
 
 use App\Models\Employees;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class EmployeeRepository
@@ -65,6 +66,21 @@ class EmployeeRepository
     public function findById(int $employeeId): ?Employees
     {
         return Employees::with('department', 'position')->find($employeeId);
+    }
+
+    /**
+     * Ambil daftar employee yang belum memiliki akun user, untuk dropdown
+     * pembuatan akun login pada modul User. Employee yang sudah terhubung
+     * ke user (manapun) tidak ikut dikembalikan.
+     *
+     * @return Collection<int, Employees>
+     */
+    public function getAvailableForUser(): Collection
+    {
+        return Employees::with('department', 'position')
+            ->whereDoesntHave('user')
+            ->orderBy('full_name')
+            ->get();
     }
 
     public function create(array $data): Employees

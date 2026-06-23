@@ -10,7 +10,12 @@ export default function userManager() {
             password: '',
             role_id: null,
             employee_id: null,
+            employee_full_name: '',
             is_active: true,
+        },
+        employeeInfo: {
+            department: '-',
+            position: '-',
         },
         deleteTarget: {
             id: null,
@@ -63,8 +68,10 @@ export default function userManager() {
                 password: '',
                 role_id: null,
                 employee_id: null,
+                employee_full_name: '',
                 is_active: true,
             };
+            this.employeeInfo = { department: '-', position: '-' };
             this.showFormModal = true;
         },
 
@@ -77,6 +84,7 @@ export default function userManager() {
                 password: '',
                 role_id: user.role_id,
                 employee_id: user.employee_id ?? null,
+                employee_full_name: user.employee_full_name ?? '',
                 is_active: user.is_active,
             };
             this.showFormModal = true;
@@ -84,6 +92,21 @@ export default function userManager() {
 
         closeFormModal() {
             this.showFormModal = false;
+        },
+
+        onEmployeeChange(event) {
+            const option = event.target.selectedOptions[0];
+
+            if (!option || !option.value) {
+                this.employeeInfo = { department: '-', position: '-' };
+                return;
+            }
+
+            this.form.name = option.dataset.fullName;
+            this.employeeInfo = {
+                department: option.dataset.department,
+                position: option.dataset.position,
+            };
         },
 
         openDelete(user) {

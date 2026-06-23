@@ -136,6 +136,46 @@
                     </div>
 
                     <div class="ems-modal__body">
+                        <div class="ems-form-group" x-show="mode === 'create'">
+                            <label class="ems-form-label" for="user_employee">Karyawan (opsional)</label>
+                            <select
+                                id="user_employee"
+                                :name="mode === 'create' ? 'employee_id' : ''"
+                                class="ems-form-control"
+                                x-model="form.employee_id"
+                                @change="onEmployeeChange($event)"
+                            >
+                                <option value="">— Buat akun tanpa data karyawan —</option>
+                                @foreach ($availableEmployees as $employee)
+                                    <option
+                                        value="{{ $employee->employee_id }}"
+                                        data-full-name="{{ $employee->full_name }}"
+                                        data-employee-number="{{ $employee->employee_number }}"
+                                        data-department="{{ $employee->department?->name ?? '-' }}"
+                                        data-position="{{ $employee->position?->name ?? '-' }}"
+                                    >
+                                        {{ $employee->full_name }} ({{ $employee->employee_number }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <p class="ems-form-hint">Pilih karyawan untuk membuatkan akun login. Nama akan terisi otomatis dan dapat diubah jika perlu.</p>
+                        </div>
+
+                        <div class="ems-form-group" x-show="mode === 'edit' && form.employee_id" x-cloak>
+                            <label class="ems-form-label">Karyawan Terhubung</label>
+                            <input type="text" class="ems-form-control" :value="form.employee_full_name" disabled>
+                            <input type="hidden" name="employee_id" :value="form.employee_id">
+                            <p class="ems-form-hint">Karyawan yang terhubung tidak dapat diubah setelah akun dibuat.</p>
+                        </div>
+
+                        <div class="ems-form-group" x-show="mode === 'create' && form.employee_id" x-cloak>
+                            <label class="ems-form-label">Info Karyawan</label>
+                            <div class="ems-form-hint">
+                                Departemen: <strong x-text="employeeInfo.department"></strong> ·
+                                Posisi: <strong x-text="employeeInfo.position"></strong>
+                            </div>
+                        </div>
+
                         <div class="ems-form-group">
                             <label class="ems-form-label" for="user_name">Nama User</label>
                             <input
