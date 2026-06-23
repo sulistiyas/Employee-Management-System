@@ -16,7 +16,7 @@
 </head>
 <body>
 
-<div class="login-wrapper">
+<div class="login-wrapper" x-data="loginForm()">
     <div class="login-card">
 
         {{-- Brand --}}
@@ -46,7 +46,7 @@
 
         {{-- Form Login --}}
         <form action="{{ route('login') }}" method="POST" class="login-form" id="loginForm"
-              x-data="loginForm()" @submit="handleSubmit">
+              @submit="handleSubmit">
             @csrf
 
             {{-- Email --}}
@@ -144,11 +144,45 @@
             </button>
         </form>
 
+        {{-- Demo Account --}}
+        <button
+            type="button"
+            class="btn-demo-account"
+            @click="openDemoModal"
+        >
+            Pilih Demo Account
+        </button>
+
         {{-- Footer --}}
         <p class="login-footer">
             &copy; {{ date('Y') }} {{ config('app.name', 'Employee Management') }}. All rights reserved.
         </p>
 
+    </div>
+
+    {{-- Modal Demo Account --}}
+    <div class="demo-modal-overlay" x-show="showDemoModal" x-cloak @click.self="closeDemoModal" style="display:none">
+        <div class="demo-modal">
+            <div class="demo-modal-header">
+                <h2 class="demo-modal-title">Pilih Demo Account</h2>
+                <button type="button" class="demo-modal-close" @click="closeDemoModal" aria-label="Tutup">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <ul class="demo-modal-list">
+                <template x-for="account in demoAccounts" :key="account.email">
+                    <li>
+                        <button type="button" class="demo-account-item" @click="fillDemoAccount(account.email)">
+                            <span class="demo-account-role" x-text="account.label"></span>
+                            <span class="demo-account-email" x-text="account.email"></span>
+                        </button>
+                    </li>
+                </template>
+            </ul>
+        </div>
     </div>
 </div>
 
