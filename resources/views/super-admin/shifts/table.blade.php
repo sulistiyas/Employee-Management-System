@@ -1,5 +1,5 @@
-<div class="ems-table-wrap">
-    <table class="ems-table">
+<div class="ems-dt-wrap">
+    <table class="ems-dt">
         <thead>
             <tr>
                 <th>Nama Shift</th>
@@ -7,7 +7,7 @@
                 <th>Jam Kerja</th>
                 <th>Toleransi Telat</th>
                 <th>Jumlah Karyawan</th>
-                <th class="ems-table__th-right">Aksi</th>
+                <th style="text-align: right;">Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -25,10 +25,10 @@
                     <td class="ems-table__muted">{{ $shift->late_tolerance_minutes }} menit</td>
                     <td>{{ $shift->employee_shifts_count ?? 0 }}</td>
                     <td>
-                        <div class="ems-table__actions">
+                        <div class="ems-dt-actions" style="justify-content: flex-end;">
                             <button
                                 type="button"
-                                class="ems-icon-btn ems-icon-btn--edit"
+                                class="ems-dt-action ems-dt-action--edit"
                                 title="Edit"
                                 @click="openEdit({
                                     shift_id: {{ $shift->shift_id }},
@@ -43,7 +43,7 @@
                             </button>
                             <button
                                 type="button"
-                                class="ems-icon-btn ems-icon-btn--delete"
+                                class="ems-dt-action ems-dt-action--delete"
                                 title="Hapus"
                                 @click="openDelete({
                                     shift_id: {{ $shift->shift_id }},
@@ -58,9 +58,11 @@
             @empty
                 <tr>
                     <td colspan="6">
-                        <div class="ems-empty">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                            <p>
+                        <div class="ems-dt__empty">
+                            <div class="ems-dt__empty-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </div>
+                            <p class="ems-dt__empty-text">
                                 @if (request('search'))
                                     Shift tidak ditemukan untuk pencarian "{{ request('search') }}"
                                 @else
