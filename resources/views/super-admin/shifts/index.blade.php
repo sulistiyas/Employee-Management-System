@@ -22,22 +22,25 @@
 
         {{-- Table --}}
         <div class="ems-card ems-card--flush" @click="handlePaginationClick($event)">
-            <div class="ems-table-toolbar">
-                <div class="ems-search-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ems-search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
 
-                    <input
-                        type="text"
-                        class="ems-search-input"
-                        placeholder="Cari nama atau kode shift..."
-                        x-model="searchQuery"
-                        @input.debounce.400ms="handleSearch()"
-                    >
-
+            {{-- Toolbar: search --}}
+            <div class="ems-dt-toolbar">
+                <div class="ems-dt-toolbar__left">
+                    <div class="ems-dt-search">
+                        <span class="ems-dt-search__icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        </span>
+                        <input
+                            type="text"
+                            class="ems-dt-search__input"
+                            placeholder="Cari nama atau kode shift..."
+                            x-model="searchQuery"
+                            @input.debounce.400ms="handleSearch()"
+                        >
+                    </div>
                     <span x-show="isLoadingTable" x-cloak class="ems-search-spinner">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="ems-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
                     </span>
-
                     <button
                         type="button"
                         x-show="!isLoadingTable && searchQuery"
@@ -57,8 +60,6 @@
                 </div>
             </div>
         </div>
-
-        <x-pagination :paginator="$shifts" />
 
         {{-- Modal: Create / Edit --}}
         <div class="ems-modal-overlay" x-show="showFormModal" x-cloak @keydown.escape.window="closeFormModal()">
