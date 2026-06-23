@@ -69,8 +69,7 @@
                 <span class="ems-sidebar__label" x-show="sidebarOpen">Attendance</span>
             </a>
 
-            <a href="#"
-            {{-- <a href="{{ route('super-admin.shifts.index') }}" --}}
+            <a href="{{ route('super-admin.shifts.index') }}"
                class="ems-sidebar__link {{ request()->routeIs('super-admin.shifts.*') ? 'ems-sidebar__link--active' : '' }}">
                 <span class="ems-sidebar__icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>

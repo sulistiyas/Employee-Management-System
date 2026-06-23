@@ -2120,6 +2120,13 @@ input, textarea, select {
     overflow: hidden;
 }
 
+.ems-modal > form {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
 .ems-modal--sm {
     max-width: 400px;
 }

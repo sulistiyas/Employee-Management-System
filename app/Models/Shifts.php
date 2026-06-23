@@ -11,6 +11,14 @@ class Shifts extends Model
 
     protected $primaryKey = 'shift_id';
 
+    protected $fillable = [
+        'code',
+        'name',
+        'start_time',
+        'end_time',
+        'late_tolerance_minutes',
+    ];
+
     public function employeeShifts(): HasMany
     {
         return $this->hasMany(EmployeeShifts::class, 'shift_id', 'shift_id');

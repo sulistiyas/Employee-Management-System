@@ -6,6 +6,7 @@ use App\Http\Controllers\SuperAdmin\DepartmentController;
 use App\Http\Controllers\SuperAdmin\EmployeeController;
 use App\Http\Controllers\SuperAdmin\PositionController;
 use App\Http\Controllers\SuperAdmin\RoleController;
+use App\Http\Controllers\SuperAdmin\ShiftController;
 use App\Http\Controllers\SuperAdmin\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -52,6 +53,11 @@ Route::middleware('auth')->group(function () {
             Route::put('/positions/{position}', [PositionController::class, 'update'])->name('positions.update');
             Route::delete('/positions/{position}', [PositionController::class, 'destroy'])->name('positions.destroy');
             Route::delete('/positions-bulk', [PositionController::class, 'bulkDestroy'])->name('positions.bulk-destroy');
+
+            Route::get('/shifts', [ShiftController::class, 'index'])->name('shifts.index');
+            Route::post('/shifts', [ShiftController::class, 'store'])->name('shifts.store');
+            Route::put('/shifts/{shift}', [ShiftController::class, 'update'])->name('shifts.update');
+            Route::delete('/shifts/{shift}', [ShiftController::class, 'destroy'])->name('shifts.destroy');
 
             Route::get('/users', [UserController::class, 'index'])->name('users.index');
             Route::post('/users', [UserController::class, 'store'])->name('users.store');
