@@ -2352,3 +2352,73 @@ select.ems-form-control {
     background: rgba(245, 158, 11, 0.1);
     color: #92400e;
 }
+
+/* ============================================================
+   Shift Detail page — assign/remove employees
+   ============================================================ */
+.ems-breadcrumb-back {
+    display: inline-block;
+    font-size: 13px;
+    color: var(--ems-slate-500);
+    text-decoration: none;
+    margin-bottom: 6px;
+}
+
+.ems-breadcrumb-back:hover {
+    color: var(--ems-blue-600);
+}
+
+.ems-btn--danger-soft {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1.5px solid #fecaca;
+}
+
+.ems-btn--danger-soft:hover {
+    background: #fecaca;
+    color: #7f1d1d;
+}
+
+.ems-checklist {
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1.5px solid var(--ems-slate-200);
+    border-radius: var(--ems-radius-sm);
+    margin-top: 8px;
+}
+
+.ems-checklist__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--ems-slate-100);
+    cursor: pointer;
+    font-size: 13.5px;
+}
+
+.ems-checklist__item:last-child {
+    border-bottom: none;
+}
+
+.ems-checklist__item:hover {
+    background: var(--ems-slate-50);
+}
+
+.ems-checklist__item input[type="checkbox"] {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.ems-checklist__item strong {
+    display: block;
+    color: var(--ems-slate-800);
+    font-weight: 500;
+}
+
+.ems-checklist__item small {
+    display: block;
+    color: var(--ems-slate-500);
+    font-size: 12px;
+    margin-top: 2px;
+}

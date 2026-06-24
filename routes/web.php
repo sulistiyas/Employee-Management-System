@@ -57,8 +57,12 @@ Route::middleware('auth')->group(function () {
             Route::get('/shifts', [ShiftController::class, 'index'])->name('shifts.index');
             Route::post('/shifts', [ShiftController::class, 'store'])->name('shifts.store');
             Route::get('/shifts/next-code', [ShiftController::class, 'getNextCode'])->name('shifts.next-code');
+            Route::get('/shifts/available-employees', [ShiftController::class, 'availableEmployees'])->name('shifts.available-employees');
+            Route::get('/shifts/{shift}', [ShiftController::class, 'show'])->name('shifts.show');
             Route::put('/shifts/{shift}', [ShiftController::class, 'update'])->name('shifts.update');
             Route::delete('/shifts/{shift}', [ShiftController::class, 'destroy'])->name('shifts.destroy');
+            Route::post('/shifts/{shift}/assign', [ShiftController::class, 'assign'])->name('shifts.assign');
+            Route::delete('/shifts/{shift}/assignments', [ShiftController::class, 'removeAssignments'])->name('shifts.remove-assignments');
 
             Route::get('/users', [UserController::class, 'index'])->name('users.index');
             Route::post('/users', [UserController::class, 'store'])->name('users.store');

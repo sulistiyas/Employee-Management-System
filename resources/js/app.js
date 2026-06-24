@@ -6,6 +6,7 @@ import positionManager from './components/positionManager';
 import shiftManager from './components/shiftManager';
 import userManager from './components/userManager';
 import employeeManager from './components/employeeManager';
+import shiftDetailManager from './components/shiftDetailManager';
 
 // import datatableFilter from './datatableFilter';
 
@@ -54,6 +55,7 @@ Alpine.data('loginForm', () => ({
 Alpine.data('roleManager', roleManager);
 Alpine.data('departmentManager', departmentManager);
 Alpine.data('positionManager', positionManager);
+Alpine.data('shiftDetailManager', shiftDetailManager);
 Alpine.data('shiftManager', shiftManager);
 Alpine.data('userManager', userManager);
 Alpine.data('employeeManager', employeeManager);

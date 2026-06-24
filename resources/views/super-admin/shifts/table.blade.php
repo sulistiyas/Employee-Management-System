@@ -34,6 +34,13 @@
                     <td>{{ $shift->employee_shifts_count ?? 0 }}</td>
                     <td>
                         <div class="ems-dt-actions">
+                            <a
+                                href="{{ route('super-admin.shifts.show', $shift->shift_id) }}"
+                                class="ems-dt-action ems-dt-action--view"
+                                title="Detail"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </a>
                             <button
                                 type="button"
                                 class="ems-dt-action ems-dt-action--edit"
