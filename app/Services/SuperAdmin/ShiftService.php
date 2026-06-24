@@ -10,9 +10,9 @@ class ShiftService
 {
     public function __construct(private ShiftRepository $shiftRepository) {}
 
-    public function getAllShifts(?string $search = null): LengthAwarePaginator
+    public function getAllShifts(?string $search = null, int $perPage = 10): LengthAwarePaginator
     {
-        return $this->shiftRepository->getAll($search);
+        return $this->shiftRepository->getAll($search, $perPage);
     }
 
     public function findShift(int $shiftId): ?Shifts
@@ -22,17 +22,22 @@ class ShiftService
 
     public function createShift(array $data): Shifts
     {
+        // Generate kode otomatis dari jenis shift
+        $data['code'] = $this->shiftRepository->getNextCodeForType($data['name']);
+
         return $this->shiftRepository->create($data);
     }
 
     public function updateShift(Shifts $shift, array $data): Shifts
     {
+        // Jika jenis shift berubah, generate kode baru
+        if ($shift->name !== $data['name']) {
+            $data['code'] = $this->shiftRepository->getNextCodeForType($data['name']);
+        }
+
         return $this->shiftRepository->update($shift, $data);
     }
 
-    /**
-     * Hapus shift. Shift yang masih digunakan oleh employee shifts tidak boleh dihapus.
-     */
     public function deleteShift(Shifts $shift): bool
     {
         if ($shift->employeeShifts()->exists()) {
@@ -40,5 +45,11 @@ class ShiftService
         }
 
         return $this->shiftRepository->delete($shift);
+    }
+
+    // Untuk endpoint AJAX — ambil preview kode
+    public function getNextCode(string $type): string
+    {
+        return $this->shiftRepository->getNextCodeForType($type);
     }
 }

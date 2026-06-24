@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Shifts extends Model
 {
     protected $table = 'shifts';
-
     protected $primaryKey = 'shift_id';
 
     protected $fillable = [
@@ -17,6 +16,13 @@ class Shifts extends Model
         'start_time',
         'end_time',
         'late_tolerance_minutes',
+    ];
+
+    // Tambahkan konstanta ini
+    const TYPES = [
+        'pagi'  => ['label' => 'Pagi',  'prefix' => 'SH-PG'],
+        'sore'  => ['label' => 'Sore',  'prefix' => 'SH-SR'],
+        'malam' => ['label' => 'Malam', 'prefix' => 'SH-ML'],
     ];
 
     public function employeeShifts(): HasMany

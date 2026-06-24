@@ -22,34 +22,31 @@
 
         {{-- Table --}}
         <div class="ems-card ems-card--flush" @click="handlePaginationClick($event)">
-
-            {{-- Toolbar: search --}}
-            <div class="ems-table-toolbar">
-                <div class="ems-search-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ems-search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-
-                    <input
-                        type="text"
-                        class="ems-search-input"
-                        placeholder="Cari nama atau kode shift..."
-                        x-model="searchQuery"
-                        @input.debounce.400ms="handleSearch()"
-                    >
-
-                    <span x-show="isLoadingTable" x-cloak class="ems-search-spinner">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="ems-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-                    </span>
-
-                    <button
-                        type="button"
-                        x-show="!isLoadingTable && searchQuery"
-                        x-cloak
-                        @click="clearSearch()"
-                        class="ems-search-clear"
-                        title="Hapus pencarian"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </button>
+            <div class="ems-dt-toolbar">
+                <div class="ems-dt-toolbar__left">
+                    <div class="ems-dt-search">
+                        <span class="ems-dt-search__icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        </span>
+                        <input
+                            type="text"
+                            class="ems-dt-search__input"
+                            placeholder="Cari nama atau kode shift..."
+                            x-model="searchQuery"
+                            @input.debounce.400ms="handleSearch()"
+                        >
+                    </div>
+                </div>
+                <div class="ems-dt-toolbar__right">
+                    <div class="ems-dt-perpage">
+                        <span>Tampilkan</span>
+                        <select class="ems-dt-perpage__select" x-model="perPage" @change="changePerPage()">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -78,31 +75,48 @@
                     </div>
 
                     <div class="ems-modal__body">
+                        {{-- Jenis Shift: dropdown --}}
                         <div class="ems-form-group">
-                            <label class="ems-form-label" for="shift_name">Nama Shift</label>
-                            <input
+                            <label class="ems-form-label" for="shift_name">Jenis Shift</label>
+                            <select
                                 id="shift_name"
-                                type="text"
                                 name="name"
                                 class="ems-form-control"
                                 x-model="form.name"
-                                placeholder="Contoh: Shift Pagi"
+                                @change="onTypeChange()"
                                 required
                             >
+                                <option value="" disabled>-- Pilih Jenis Shift --</option>
+                                @foreach ($shiftTypes as $key => $type)
+                                    <option value="{{ $key }}">{{ $type['label'] }}</option>
+                                @endforeach
+                            </select>
                         </div>
 
+                        {{-- Kode Shift: readonly, auto-generated --}}
                         <div class="ems-form-group">
                             <label class="ems-form-label" for="shift_code">Kode Shift</label>
-                            <input
-                                id="shift_code"
-                                type="text"
-                                name="code"
-                                class="ems-form-control"
-                                x-model="form.code"
-                                placeholder="Contoh: SHIFT-PAGI"
-                                required
-                            >
-                            <span class="ems-form-hint">Gunakan kode unik untuk identitas shift ini.</span>
+                            <div style="position: relative;">
+                                <input
+                                    id="shift_code"
+                                    type="text"
+                                    name="code"
+                                    class="ems-form-control"
+                                    x-model="form.code"
+                                    placeholder="Otomatis terisi setelah memilih jenis shift"
+                                    readonly
+                                >
+                                {{-- Spinner saat loading --}}
+                                <span
+                                    x-show="isLoadingCode"
+                                    style="position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:12px; color:#888;"
+                                >
+                                    Memuat...
+                                </span>
+                            </div>
+                            <span class="ems-form-hint">
+                                Kode otomatis berdasarkan jenis dan urutan shift.
+                            </span>
                         </div>
 
                         <div class="ems-form-row">
@@ -132,17 +146,18 @@
                         </div>
 
                         <div class="ems-form-group">
-                            <label class="ems-form-label" for="shift_late_tolerance_minutes">Toleransi Telat (menit)</label>
+                            <label class="ems-form-label" for="shift_late_tolerance">Toleransi Telat (menit)</label>
                             <input
-                                id="shift_late_tolerance_minutes"
+                                id="shift_late_tolerance"
                                 type="number"
                                 name="late_tolerance_minutes"
                                 class="ems-form-control"
                                 x-model="form.late_tolerance_minutes"
+                                placeholder="Contoh: 15"
                                 min="0"
-                                placeholder="0"
+                                required
                             >
-                            <span class="ems-form-hint">Jumlah menit keterlambatan yang masih ditoleransi sebelum dianggap telat.</span>
+                            <span class="ems-form-hint">Waktu toleransi keterlambatan dalam menit.</span>
                         </div>
                     </div>
 
@@ -182,3 +197,10 @@
     </div>
 
 @endsection
+@push('scripts')
+<script>
+    window.shiftRoutes = {
+        nextCode: '{{ route('super-admin.shifts.next-code') }}',
+    };
+</script>
+@endpush

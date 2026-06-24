@@ -29,12 +29,8 @@
                     <td>
                         <span class="ems-pill ems-pill--leave">{{ $shift->code }}</span>
                     </td>
-                    <td class="ems-table__muted">
-                        {{ \Illuminate\Support\Carbon::parse($shift->start_time)->format('H:i') }}
-                        &ndash;
-                        {{ \Illuminate\Support\Carbon::parse($shift->end_time)->format('H:i') }}
-                    </td>
-                    <td class="ems-table__muted">{{ $shift->late_tolerance_minutes }} menit</td>
+                    <td>{{ \Carbon\Carbon::parse($shift->start_time)->format('H:i') }} – {{ \Carbon\Carbon::parse($shift->end_time)->format('H:i') }}</td>
+                    <td>{{ $shift->late_tolerance_minutes }} menit</td>
                     <td>{{ $shift->employee_shifts_count ?? 0 }}</td>
                     <td>
                         <div class="ems-dt-actions">
@@ -46,8 +42,8 @@
                                     shift_id: {{ $shift->shift_id }},
                                     name: @js($shift->name),
                                     code: @js($shift->code),
-                                    start_time: @js(\Illuminate\Support\Carbon::parse($shift->start_time)->format('H:i')),
-                                    end_time: @js(\Illuminate\Support\Carbon::parse($shift->end_time)->format('H:i')),
+                                    start_time: @js(\Carbon\Carbon::parse($shift->start_time)->format('H:i')),
+                                    end_time: @js(\Carbon\Carbon::parse($shift->end_time)->format('H:i')),
                                     late_tolerance_minutes: {{ $shift->late_tolerance_minutes }},
                                 })"
                             >

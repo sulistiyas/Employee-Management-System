@@ -49,6 +49,6 @@
 
     {{-- Sidebar overlay for mobile --}}
     <div class="ems-overlay" x-show="sidebarOpen && isMobile()" @click="sidebarOpen = false" x-cloak></div>
-
+    @stack('scripts')
 </body>
 </html>

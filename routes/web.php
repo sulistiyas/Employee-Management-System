@@ -56,6 +56,7 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/shifts', [ShiftController::class, 'index'])->name('shifts.index');
             Route::post('/shifts', [ShiftController::class, 'store'])->name('shifts.store');
+            Route::get('/shifts/next-code', [ShiftController::class, 'getNextCode'])->name('shifts.next-code');
             Route::put('/shifts/{shift}', [ShiftController::class, 'update'])->name('shifts.update');
             Route::delete('/shifts/{shift}', [ShiftController::class, 'destroy'])->name('shifts.destroy');
 

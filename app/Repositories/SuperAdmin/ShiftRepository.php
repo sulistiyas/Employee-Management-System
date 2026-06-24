@@ -16,7 +16,7 @@ class ShiftRepository
                         ->orWhere('code', 'like', "%{$search}%");
                 });
             })
-            ->orderBy('start_time')
+            ->orderBy('name')
             ->paginate($perPage)
             ->withQueryString();
     }
@@ -41,5 +41,18 @@ class ShiftRepository
     public function delete(Shifts $shift): bool
     {
         return $shift->delete();
+    }
+
+
+    public function getNextCodeForType(string $type): string
+    {
+        $prefix = Shifts::TYPES[$type]['prefix'] ?? 'SH-XX';
+
+        // Hitung berapa shift dengan prefix ini sudah ada
+        $count = Shifts::where('code', 'like', "{$prefix}-%")->count();
+
+        $nextNumber = str_pad($count + 1, 3, '0', STR_PAD_LEFT);
+
+        return "{$prefix}-{$nextNumber}";
     }
 }

@@ -17,26 +17,26 @@ class ShiftRequest extends FormRequest
         $shiftId = $this->route('shift')?->shift_id;
 
         return [
-            'code' => ['required', 'string', 'max:255', Rule::unique('shifts', 'code')->ignore($shiftId, 'shift_id')],
-            'name' => ['required', 'string', 'max:255'],
-            'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['required', 'date_format:H:i'],
-            'late_tolerance_minutes' => ['nullable', 'integer', 'min:0'],
+            'name'                   => ['required', 'string', 'in:pagi,sore,malam'],
+            // 'code'                   => ['required', 'string', 'max:50', Rule::unique('shifts', 'code')->ignore($shiftId, 'shift_id')],
+            'start_time'             => ['required', 'date_format:H:i'],
+            'end_time'               => ['required', 'date_format:H:i'],
+            'late_tolerance_minutes' => ['required', 'integer', 'min:0'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'code.required' => 'Kode shift wajib diisi.',
-            'code.unique' => 'Kode sudah digunakan oleh shift lain.',
-            'name.required' => 'Nama shift wajib diisi.',
-            'start_time.required' => 'Jam mulai wajib diisi.',
-            'start_time.date_format' => 'Format jam mulai tidak valid.',
-            'end_time.required' => 'Jam selesai wajib diisi.',
-            'end_time.date_format' => 'Format jam selesai tidak valid.',
-            'late_tolerance_minutes.integer' => 'Toleransi telat harus berupa angka.',
-            'late_tolerance_minutes.min' => 'Toleransi telat tidak boleh negatif.',
+            'name.required'                   => 'Jenis shift wajib dipilih.',
+            'name.in'                         => 'Jenis shift tidak valid.',
+            'start_time.required'             => 'Jam mulai wajib diisi.',
+            'start_time.date_format'          => 'Format jam mulai tidak valid (HH:MM).',
+            'end_time.required'               => 'Jam selesai wajib diisi.',
+            'end_time.date_format'            => 'Format jam selesai tidak valid (HH:MM).',
+            'late_tolerance_minutes.required' => 'Toleransi telat wajib diisi.',
+            'late_tolerance_minutes.integer'  => 'Toleransi telat harus berupa angka.',
+            'late_tolerance_minutes.min'      => 'Toleransi telat tidak boleh negatif.',
         ];
     }
 }
