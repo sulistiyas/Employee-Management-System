@@ -2,17 +2,29 @@
     <table class="ems-dt">
         <thead>
             <tr>
+                <th class="ems-dt__checkbox">
+                    <input type="checkbox" class="ems-dt__check" @change="toggleAll($event)" :checked="allSelected">
+                </th>
                 <th>Nama Shift</th>
                 <th>Kode</th>
                 <th>Jam Kerja</th>
                 <th>Toleransi Telat</th>
                 <th>Jumlah Karyawan</th>
-                <th style="text-align: right;">Aksi</th>
+                <th class="ems-table__th-right">Aksi</th>
             </tr>
         </thead>
         <tbody>
             @forelse ($shifts as $shift)
                 <tr>
+                    <td class="ems-dt__checkbox">
+                        <input
+                            type="checkbox"
+                            class="ems-dt__check"
+                            :value="{{ $shift->shift_id }}"
+                            x-model="selected"
+                            @change="updateCount()"
+                        >
+                    </td>
                     <td class="ems-table__name">{{ $shift->name }}</td>
                     <td>
                         <span class="ems-pill ems-pill--leave">{{ $shift->code }}</span>
@@ -25,7 +37,7 @@
                     <td class="ems-table__muted">{{ $shift->late_tolerance_minutes }} menit</td>
                     <td>{{ $shift->employee_shifts_count ?? 0 }}</td>
                     <td>
-                        <div class="ems-dt-actions" style="justify-content: flex-end;">
+                        <div class="ems-dt-actions">
                             <button
                                 type="button"
                                 class="ems-dt-action ems-dt-action--edit"
@@ -57,7 +69,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6">
+                    <td colspan="7">
                         <div class="ems-dt__empty">
                             <div class="ems-dt__empty-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -77,4 +89,10 @@
     </table>
 </div>
 
-<x-pagination :paginator="$shifts" />
+<div class="ems-dt-footer">
+    <div class="ems-dt-info">
+        Menampilkan <strong>{{ $shifts->firstItem() ?? 0 }}</strong>-<strong>{{ $shifts->lastItem() ?? 0 }}</strong>
+        dari <strong>{{ $shifts->total() }}</strong> shift
+    </div>
+    <x-pagination :paginator="$shifts" />
+</div>
