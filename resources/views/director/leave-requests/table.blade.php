@@ -1,0 +1,1 @@
+@include('leave-requests._table', ['leaveRequests' => $leaveRequests, 'rolePrefix' => 'director'])

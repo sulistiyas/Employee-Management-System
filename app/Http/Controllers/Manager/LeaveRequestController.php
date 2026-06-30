@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\SuperAdmin;
+namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\LeaveRequests;
-use App\Services\SuperAdmin\LeaveRequestService;
+use App\Services\LeaveRequestService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -15,39 +15,39 @@ class LeaveRequestController extends Controller
 
     public function index(Request $request): View
     {
-        $leaveRequests = $this->leaveRequestService->getAllLeaveRequests(
+        $leaveRequests = $this->leaveRequestService->getPendingForManager(
+            $request->user()->employee->employee_id,
             $request->query('search'),
-            $request->query('status'),
         );
 
         if ($request->ajax()) {
-            return view('super-admin.leave-requests.table', [
+            return view('manager.leave-requests.table', [
                 'leaveRequests' => $leaveRequests,
             ]);
         }
 
-        return view('super-admin.leave-requests.index', [
+        return view('manager.leave-requests.index', [
             'leaveRequests' => $leaveRequests,
         ]);
     }
 
     public function approve(Request $request, LeaveRequests $leaveRequest): RedirectResponse
     {
-        $this->leaveRequestService->approve($leaveRequest, $request->user()->employee);
+        $this->leaveRequestService->approve($leaveRequest, $request->user()->employee, 'pending_manager');
 
         return redirect()
-            ->route('super-admin.leave-requests.index')
-            ->with('success', 'Pengajuan cuti berhasil disetujui.');
+            ->route('manager.leave-requests.index')
+            ->with('success', 'Pengajuan cuti disetujui dan diteruskan ke HR.');
     }
 
     public function reject(Request $request, LeaveRequests $leaveRequest): RedirectResponse
     {
         $request->validate(['rejection_reason' => 'required|string|max:255']);
 
-        $this->leaveRequestService->reject($leaveRequest, $request->input('rejection_reason'));
+        $this->leaveRequestService->reject($leaveRequest, $request->input('rejection_reason'), 'pending_manager');
 
         return redirect()
-            ->route('super-admin.leave-requests.index')
+            ->route('manager.leave-requests.index')
             ->with('success', 'Pengajuan cuti ditolak.');
     }
 }
