@@ -1,92 +1,81 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\SuperAdmin;
 
-use App\Models\Employees;
 use App\Models\LeaveRequests;
-use App\Repositories\LeaveRequestRepository;
+use App\Repositories\SuperAdmin\LeaveRequestRepository;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
 
 class LeaveRequestService
 {
     public function __construct(private LeaveRequestRepository $leaveRequestRepository) {}
 
-    /**
-     * Buat pengajuan cuti baru. Jika pengaju adalah manager departemen,
-     * level approval manager dilewati otomatis (langsung pending_hr).
-     */
+    public function getAllLeaveRequests(?string $search = null, ?string $status = null, int $perPage = 10): LengthAwarePaginator
+    {
+        return $this->leaveRequestRepository->getAll($search, $status, $perPage);
+    }
+
+    public function findLeaveRequest(int $leaveRequestId): ?LeaveRequests
+    {
+        return $this->leaveRequestRepository->findById($leaveRequestId);
+    }
+
     public function createLeaveRequest(array $data): LeaveRequests
     {
-        $employee = Employees::findOrFail($data['employee_id']);
-
-        $data['status'] = $this->isDepartmentManager($employee)
-            ? 'pending_hr'
-            : 'pending_manager';
+        $data['total_days'] = $this->calculateTotalDays($data['start_date'], $data['end_date']);
+        $data['status'] = 'pending';
 
         return $this->leaveRequestRepository->create($data);
     }
 
-    public function getPendingForManager(int $managerEmployeeId, ?string $search = null): LengthAwarePaginator
+    public function updateLeaveRequest(LeaveRequests $leaveRequest, array $data): LeaveRequests
     {
-        return $this->leaveRequestRepository->getAllByStatus('pending_manager', $search, $managerEmployeeId);
-    }
+        $data['total_days'] = $this->calculateTotalDays($data['start_date'], $data['end_date']);
 
-    public function getPendingForHr(?string $search = null): LengthAwarePaginator
-    {
-        return $this->leaveRequestRepository->getAllByStatus('pending_hr', $search);
-    }
-
-    public function getPendingForDirector(?string $search = null): LengthAwarePaginator
-    {
-        return $this->leaveRequestRepository->getAllByStatus('pending_director', $search);
+        return $this->leaveRequestRepository->update($leaveRequest, $data);
     }
 
     /**
-     * Approve pengajuan cuti. $expectedStatus dipakai sebagai guard supaya
-     * approval hanya bisa dilakukan kalau pengajuan memang sedang di tahap
-     * yang sesuai dengan role yang mengakses (ditentukan oleh controller pemanggil).
+     * Hapus leave request. Leave request yang sudah disetujui tidak boleh dihapus.
      */
-    public function approve(LeaveRequests $leaveRequest, Employees $approver, string $expectedStatus): LeaveRequests
+    public function deleteLeaveRequest(LeaveRequests $leaveRequest): bool
     {
-        if ($leaveRequest->status !== $expectedStatus) {
-            throw new \RuntimeException('Pengajuan cuti tidak berada pada tahap yang sesuai untuk disetujui.');
+        if ($leaveRequest->status === 'approved') {
+            return false;
         }
 
-        return match ($expectedStatus) {
-            'pending_manager' => $this->leaveRequestRepository->update($leaveRequest, [
-                'manager_approved_by' => $approver->employee_id,
-                'manager_approved_at' => now(),
-                'status' => 'pending_hr',
-            ]),
-            'pending_hr' => $this->leaveRequestRepository->update($leaveRequest, [
-                'hr_approved_by' => $approver->employee_id,
-                'hr_approved_at' => now(),
-                'status' => 'pending_director',
-            ]),
-            'pending_director' => $this->leaveRequestRepository->update($leaveRequest, [
-                'director_approved_by' => $approver->employee_id,
-                'director_approved_at' => now(),
-                'status' => 'approved',
-            ]),
-            default => throw new \RuntimeException('Tahap approval tidak dikenali.'),
-        };
+        return $this->leaveRequestRepository->delete($leaveRequest);
     }
 
-    public function reject(LeaveRequests $leaveRequest, string $reason, string $expectedStatus): LeaveRequests
+    /**
+     * Hapus banyak leave request sekaligus. Mengembalikan jumlah yang berhasil dihapus.
+     */
+    public function deleteManyLeaveRequests(array $leaveRequestIds): int
     {
-        if ($leaveRequest->status !== $expectedStatus) {
-            throw new \RuntimeException('Pengajuan cuti tidak berada pada tahap yang sesuai untuk ditolak.');
-        }
+        return $this->leaveRequestRepository->deleteMany($leaveRequestIds);
+    }
 
+    public function approveLeaveRequest(LeaveRequests $leaveRequest, int $approvedBy): LeaveRequests
+    {
         return $this->leaveRequestRepository->update($leaveRequest, [
-            'status' => 'rejected',
-            'rejected_at_level' => $expectedStatus,
-            'rejection_reason' => $reason,
+            'status' => 'approved',
+            'approved_by' => $approvedBy,
+            'approved_at' => now(),
         ]);
     }
 
-    private function isDepartmentManager(Employees $employee): bool
+    public function rejectLeaveRequest(LeaveRequests $leaveRequest, int $approvedBy): LeaveRequests
     {
-        return $employee->managedDepartments()->exists();
+        return $this->leaveRequestRepository->update($leaveRequest, [
+            'status' => 'rejected',
+            'approved_by' => $approvedBy,
+            'approved_at' => now(),
+        ]);
+    }
+
+    private function calculateTotalDays(string $startDate, string $endDate): int
+    {
+        return Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate)) + 1;
     }
 }

@@ -1,29 +1,25 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\SuperAdmin;
 
 use App\Models\LeaveRequests;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class LeaveRequestRepository
 {
-    public function getAllByStatus(
-        string $status,
-        ?string $search = null,
-        ?int $managerEmployeeId = null,
-        int $perPage = 10
-    ): LengthAwarePaginator {
-        return LeaveRequests::with(['employee.department', 'leaveType'])
-            ->where('status', $status)
-            ->when($managerEmployeeId, function ($query) use ($managerEmployeeId) {
-                $query->whereHas('employee.department', function ($q) use ($managerEmployeeId) {
-                    $q->where('manager_employee_id', $managerEmployeeId);
+    public function getAll(?string $search = null, ?string $status = null, int $perPage = 10): LengthAwarePaginator
+    {
+        return LeaveRequests::with(['employee', 'leaveType', 'approvedBy'])
+            ->when($search, function ($query, $search) {
+                $query->whereHas('employee', function ($q) use ($search) {
+                    $q->where('full_name', 'like', "%{$search}%")
+                        ->orWhere('employee_number', 'like', "%{$search}%");
                 });
             })
-            ->when($search, function ($query, $search) {
-                $query->whereHas('employee', fn ($q) => $q->where('full_name', 'like', "%{$search}%"));
+            ->when($status, function ($query, $status) {
+                $query->where('status', $status);
             })
-            ->orderByDesc('created_at')
+            ->orderByDesc('start_date')
             ->paginate($perPage)
             ->withQueryString();
     }
@@ -43,5 +39,23 @@ class LeaveRequestRepository
         $leaveRequest->update($data);
 
         return $leaveRequest;
+    }
+
+    public function delete(LeaveRequests $leaveRequest): bool
+    {
+        return $leaveRequest->delete();
+    }
+
+    /**
+     * Hapus banyak leave request sekaligus berdasarkan ID.
+     * Leave request yang sudah disetujui (approved) tidak ikut dihapus.
+     */
+    public function deleteMany(array $leaveRequestIds): int
+    {
+        return LeaveRequests::whereIn('leave_request_id', $leaveRequestIds)
+            ->where('status', '!=', 'approved')
+            ->get()
+            ->each(fn (LeaveRequests $leaveRequest) => $leaveRequest->delete())
+            ->count();
     }
 }

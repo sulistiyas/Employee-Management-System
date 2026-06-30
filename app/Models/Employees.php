@@ -57,19 +57,9 @@ class Employees extends Model
         return $this->hasMany(LeaveRequests::class, 'employee_id', 'employee_id');
     }
 
-    public function managerApprovedLeaveRequests(): HasMany
+    public function approvedLeaveRequests(): HasMany
     {
-        return $this->hasMany(LeaveRequests::class, 'manager_approved_by', 'employee_id');
-    }
-
-    public function hrApprovedLeaveRequests(): HasMany
-    {
-        return $this->hasMany(LeaveRequests::class, 'hr_approved_by', 'employee_id');
-    }
-
-    public function directorApprovedLeaveRequests(): HasMany
-    {
-        return $this->hasMany(LeaveRequests::class, 'director_approved_by', 'employee_id');
+        return $this->hasMany(LeaveRequests::class, 'approved_by', 'employee_id');
     }
 
     public function managedDepartments(): HasMany

@@ -10,7 +10,6 @@ import shiftDetailManager from './components/shiftDetailManager';
 import leaveTypeManager from './components/leaveTypeManager';
 import leaveRequestManager from './components/leaveRequestManager';
 import attendanceManager from './components/attendanceManager';
-import leaveApprovalManager from './components/leaveApprovalManager';
 
 // import datatableFilter from './datatableFilter';
 
@@ -66,7 +65,6 @@ Alpine.data('employeeManager', employeeManager);
 Alpine.data('leaveTypeManager', leaveTypeManager);
 Alpine.data('leaveRequestManager', leaveRequestManager);
 Alpine.data('attendanceManager', attendanceManager);
-Alpine.data('leaveApprovalManager', leaveApprovalManager);
 
 // Alpine.data('datatableFilter', datatableFilter);
 
