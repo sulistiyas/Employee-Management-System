@@ -6,13 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DepartmentRequest;
 use App\Models\Departments;
 use App\Services\SuperAdmin\DepartmentService;
+use App\Services\SuperAdmin\EmployeeService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DepartmentController extends Controller
 {
-    public function __construct(private DepartmentService $departmentService) {}
+    public function __construct(
+        private DepartmentService $departmentService,
+        private EmployeeService $employeeService
+    ) {}
 
     public function index(Request $request): View
     {
@@ -24,8 +28,11 @@ class DepartmentController extends Controller
             ]);
         }
 
+        $activeEmployees = $this->employeeService->getActiveEmployees();
+
         return view('super-admin.departments.index', [
             'departments' => $departments,
+            'activeEmployees' => $activeEmployees,
         ]);
     }
 

@@ -20,6 +20,8 @@ class DepartmentRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'code' => ['required', 'string', 'max:255', Rule::unique('departments', 'code')->ignore($departmentId, 'department_id')],
             'description' => ['nullable', 'string'],
+            'manager_employee_id' => ['nullable', 'integer', 'exists:employees,employee_id'],
+            'hr_employee_id' => ['nullable', 'integer', 'exists:employees,employee_id'],
         ];
     }
 
@@ -29,6 +31,8 @@ class DepartmentRequest extends FormRequest
             'name.required' => 'Nama departemen wajib diisi.',
             'code.required' => 'Kode departemen wajib diisi.',
             'code.unique' => 'Kode sudah digunakan oleh departemen lain.',
+            'manager_employee_id.exists' => 'Karyawan yang dipilih sebagai manager tidak valid.',
+            'hr_employee_id.exists' => 'Karyawan yang dipilih sebagai HR tidak valid.',
         ];
     }
 }

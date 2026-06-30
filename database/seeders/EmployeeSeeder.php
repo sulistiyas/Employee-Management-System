@@ -119,7 +119,7 @@ class EmployeeSeeder extends Seeder
                     'phone' => '0812345678' . str_pad($index, 2, '0', STR_PAD_LEFT),
                     'address' => 'Jakarta, Indonesia',
                     'join_date' => '2024-01-01',
-                    'employment_status' => 'Permanent',
+                    'employment_status' => 'active',
                     'photo' => null,
                     'created_at' => now(),
                     'updated_at' => now(),

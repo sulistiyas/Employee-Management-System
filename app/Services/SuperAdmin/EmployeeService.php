@@ -47,6 +47,17 @@ class EmployeeService
         return $this->employeeRepository->getAvailableForUser();
     }
 
+    /**
+     * Ambil daftar employee dengan status aktif, untuk dropdown penunjukan
+     * manager atau HR penanggung jawab department.
+     *
+     * @return Collection<int, Employees>
+     */
+    public function getActiveEmployees(): Collection
+    {
+        return $this->employeeRepository->getActiveEmployees();
+    }
+
     public function createEmployee(array $data): Employees
     {
         return $this->employeeRepository->create($data);

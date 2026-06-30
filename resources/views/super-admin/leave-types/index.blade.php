@@ -1,21 +1,21 @@
 @extends('layouts.app')
 
-@section('title', 'Departments')
+@section('title', 'Leave Types')
 
 @section('content')
 
-    <div x-data="departmentManager()">
+    <div x-data="leaveTypeManager()">
 
         {{-- Page header --}}
         <div class="ems-page-header">
             <div>
-                <h1 class="ems-page-title">Departments</h1>
-                <p class="ems-page-subtitle">Kelola departemen dalam organisasi Anda.</p>
+                <h1 class="ems-page-title">Leave Types</h1>
+                <p class="ems-page-subtitle">Kelola jenis cuti yang tersedia bagi karyawan.</p>
             </div>
             <div class="ems-page-header__actions">
                 <button type="button" class="ems-btn ems-btn--primary" @click="openCreate()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    Tambah Departemen
+                    Tambah Jenis Cuti
                 </button>
             </div>
         </div>
@@ -33,7 +33,7 @@
                         <input
                             type="text"
                             class="ems-dt-search__input"
-                            placeholder="Cari nama departemen, kode, atau deskripsi..."
+                            placeholder="Cari nama jenis cuti..."
                             x-model="searchQuery"
                             @input.debounce.400ms="handleSearch()"
                         >
@@ -55,8 +55,8 @@
 
                 <div class="ems-dt-toolbar__right">
                     <div class="ems-dt-perpage">
-                        <label for="dept_per_page">Tampilkan</label>
-                        <select id="dept_per_page" class="ems-dt-perpage__select" x-model="perPage" @change="changePerPage()">
+                        <label for="leave_type_per_page">Tampilkan</label>
+                        <select id="leave_type_per_page" class="ems-dt-perpage__select" x-model="perPage" @change="changePerPage()">
                             <option value="10">10</option>
                             <option value="25">25</option>
                             <option value="50">50</option>
@@ -67,23 +67,23 @@
 
             {{-- Bulk action bar --}}
             <div class="ems-dt-bulk" x-show="selectedCount > 0" x-cloak>
-                <span class="ems-dt-bulk__count"><span x-text="selectedCount"></span> departemen terpilih</span>
+                <span class="ems-dt-bulk__count"><span x-text="selectedCount"></span> jenis cuti terpilih</span>
                 <button type="button" class="ems-dt-bulk__btn ems-dt-bulk__btn--danger" @click="deleteSelected()">
                     Hapus Terpilih
                 </button>
             </div>
 
-            <form id="bulk-delete-form" method="POST" action="{{ route('super-admin.departments.bulk-destroy') }}">
+            <form id="bulk-delete-form" method="POST" action="{{ route('super-admin.leave-types.bulk-destroy') }}">
                 @csrf
                 @method('DELETE')
                 <template x-for="id in selected" :key="id">
-                    <input type="hidden" name="department_ids[]" :value="id">
+                    <input type="hidden" name="leave_type_ids[]" :value="id">
                 </template>
             </form>
 
             <div class="ems-card__body">
-                <div id="departmentTableContainer" :class="{ 'ems-table-loading': isLoadingTable }">
-                    @include('super-admin.departments.table', ['departments' => $departments])
+                <div id="leaveTypeTableContainer" :class="{ 'ems-table-loading': isLoadingTable }">
+                    @include('super-admin.leave-types.table', ['leaveTypes' => $leaveTypes])
                 </div>
             </div>
         </div>
@@ -93,13 +93,13 @@
             <div class="ems-modal" @click.outside="closeFormModal()">
                 <form
                     method="POST"
-                    :action="mode === 'create' ? '{{ route('super-admin.departments.store') }}' : '{{ url('super-admin/departments') }}/' + form.department_id"
+                    :action="mode === 'create' ? '{{ route('super-admin.leave-types.store') }}' : '{{ url('super-admin/leave-types') }}/' + form.leave_type_id"
                 >
                     @csrf
                     <input type="hidden" name="_method" :value="mode === 'edit' ? 'PUT' : 'POST'">
 
                     <div class="ems-modal__header">
-                        <h2 class="ems-modal__title" x-text="mode === 'create' ? 'Tambah Departemen' : 'Edit Departemen'"></h2>
+                        <h2 class="ems-modal__title" x-text="mode === 'create' ? 'Tambah Jenis Cuti' : 'Edit Jenis Cuti'"></h2>
                         <button type="button" class="ems-modal__close" @click="closeFormModal()">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                         </button>
@@ -107,78 +107,46 @@
 
                     <div class="ems-modal__body">
                         <div class="ems-form-group">
-                            <label class="ems-form-label" for="department_name">Nama Departemen</label>
+                            <label class="ems-form-label" for="leave_type_name">Nama Jenis Cuti</label>
                             <input
-                                id="department_name"
+                                id="leave_type_name"
                                 type="text"
                                 name="name"
                                 class="ems-form-control"
                                 x-model="form.name"
-                                @input="mode === 'create' && generateCode()"
-                                placeholder="Contoh: Human Resources"
+                                placeholder="Contoh: Cuti Tahunan"
                                 required
                             >
                         </div>
 
                         <div class="ems-form-group">
-                            <label class="ems-form-label" for="department_code">Kode Departemen</label>
+                            <label class="ems-form-label" for="leave_type_max_days">Maksimal Hari</label>
                             <input
-                                id="department_code"
-                                type="text"
-                                name="code"
+                                id="leave_type_max_days"
+                                type="number"
+                                name="max_days"
                                 class="ems-form-control"
-                                x-model="form.code"
-                                placeholder="Contoh: HR"
+                                x-model="form.max_days"
+                                min="0"
+                                max="365"
+                                placeholder="Contoh: 12"
                                 required
                             >
-                            <span class="ems-form-hint">Gunakan huruf besar untuk identitas unik departemen.</span>
+                            <span class="ems-form-hint">Jumlah maksimal hari cuti yang dapat diambil per tahun.</span>
                         </div>
 
                         <div class="ems-form-group">
-                            <label class="ems-form-label" for="department_description">Deskripsi</label>
-                            <textarea
-                                id="department_description"
-                                name="description"
-                                class="ems-form-control"
-                                x-model="form.description"
-                                placeholder="Deskripsi singkat mengenai departemen ini (opsional)"
-                            ></textarea>
-                        </div>
-
-                        <div class="ems-form-group">
-                            <label class="ems-form-label" for="department_manager">Manager Departemen</label>
+                            <label class="ems-form-label" for="leave_type_is_paid">Status</label>
                             <select
-                                id="department_manager"
-                                name="manager_employee_id"
+                                id="leave_type_is_paid"
+                                name="is_paid"
                                 class="ems-form-control"
-                                x-model="form.manager_employee_id"
+                                x-model="form.is_paid"
+                                required
                             >
-                                <option value="">— Belum ditentukan —</option>
-                                @foreach ($activeEmployees as $employee)
-                                    <option value="{{ $employee->employee_id }}">
-                                        {{ $employee->full_name }} ({{ $employee->employee_number }})
-                                    </option>
-                                @endforeach
+                                <option value="1">Cuti Berbayar</option>
+                                <option value="0">Cuti Tidak Berbayar</option>
                             </select>
-                            <span class="ems-form-hint">Manager bertanggung jawab menyetujui pengajuan cuti level pertama dari departemen ini.</span>
-                        </div>
-
-                        <div class="ems-form-group">
-                            <label class="ems-form-label" for="department_hr">HR Departemen</label>
-                            <select
-                                id="department_hr"
-                                name="hr_employee_id"
-                                class="ems-form-control"
-                                x-model="form.hr_employee_id"
-                            >
-                                <option value="">— Belum ditentukan —</option>
-                                @foreach ($activeEmployees as $employee)
-                                    <option value="{{ $employee->employee_id }}">
-                                        {{ $employee->full_name }} ({{ $employee->employee_number }})
-                                    </option>
-                                @endforeach
-                            </select>
-                            <span class="ems-form-hint">HR bertanggung jawab menyetujui pengajuan cuti level kedua dari departemen ini.</span>
                         </div>
                     </div>
 
@@ -194,17 +162,17 @@
         <div class="ems-modal-overlay" x-show="showDeleteModal" x-cloak @keydown.escape.window="closeDeleteModal()">
             <div class="ems-modal ems-modal--sm" @click.outside="closeDeleteModal()">
                 <div class="ems-modal__header">
-                    <h2 class="ems-modal__title">Hapus Departemen</h2>
+                    <h2 class="ems-modal__title">Hapus Jenis Cuti</h2>
                     <button type="button" class="ems-modal__close" @click="closeDeleteModal()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                 </div>
                 <div class="ems-modal__body">
-                    <p>Apakah Anda yakin ingin menghapus departemen <strong x-text="deleteTarget.name"></strong>? Tindakan ini tidak dapat dibatalkan.</p>
+                    <p>Apakah Anda yakin ingin menghapus jenis cuti <strong x-text="deleteTarget.name"></strong>? Tindakan ini tidak dapat dibatalkan.</p>
                 </div>
                 <div class="ems-modal__footer">
                     <button type="button" class="ems-btn ems-btn--ghost ems-btn--sm" @click="closeDeleteModal()">Batal</button>
-                    <form method="POST" :action="'{{ url('super-admin/departments') }}/' + deleteTarget.department_id">
+                    <form method="POST" :action="'{{ url('super-admin/leave-types') }}/' + deleteTarget.leave_type_id">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="ems-btn-delete-confirm">

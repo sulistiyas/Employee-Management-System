@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\SuperAdmin\DashboardController;
 use App\Http\Controllers\SuperAdmin\DepartmentController;
 use App\Http\Controllers\SuperAdmin\EmployeeController;
+use App\Http\Controllers\SuperAdmin\LeaveTypeController;
 use App\Http\Controllers\SuperAdmin\PositionController;
 use App\Http\Controllers\SuperAdmin\RoleController;
 use App\Http\Controllers\SuperAdmin\ShiftController;
@@ -63,6 +64,12 @@ Route::middleware('auth')->group(function () {
             Route::delete('/shifts/{shift}', [ShiftController::class, 'destroy'])->name('shifts.destroy');
             Route::post('/shifts/{shift}/assign', [ShiftController::class, 'assign'])->name('shifts.assign');
             Route::delete('/shifts/{shift}/assignments', [ShiftController::class, 'removeAssignments'])->name('shifts.remove-assignments');
+
+            Route::get('/leave-types', [LeaveTypeController::class, 'index'])->name('leave-types.index');
+            Route::post('/leave-types', [LeaveTypeController::class, 'store'])->name('leave-types.store');
+            Route::put('/leave-types/{leave_type}', [LeaveTypeController::class, 'update'])->name('leave-types.update');
+            Route::delete('/leave-types/{leave_type}', [LeaveTypeController::class, 'destroy'])->name('leave-types.destroy');
+            Route::delete('/leave-types-bulk', [LeaveTypeController::class, 'bulkDestroy'])->name('leave-types.bulk-destroy');
 
             Route::get('/users', [UserController::class, 'index'])->name('users.index');
             Route::post('/users', [UserController::class, 'store'])->name('users.store');

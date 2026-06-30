@@ -9,7 +9,8 @@ class DepartmentRepository
 {
     public function getAll(?string $search = null, int $perPage = 10): LengthAwarePaginator
     {
-        return Departments::withCount('employees')
+        return Departments::with('departmentManager', 'departmentHr')
+            ->withCount('employees')
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")

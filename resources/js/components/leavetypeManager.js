@@ -1,18 +1,16 @@
-export default function departmentManager() {
+export default function leaveTypeManager() {
     return {
         showFormModal: false,
         showDeleteModal: false,
         mode: 'create', // 'create' | 'edit'
         form: {
-            department_id: null,
+            leave_type_id: null,
             name: '',
-            code: '',
-            description: '',
-            manager_employee_id: '',
-            hr_employee_id: '',
+            max_days: '',
+            is_paid: '1',
         },
         deleteTarget: {
-            department_id: null,
+            leave_type_id: null,
             name: '',
         },
 
@@ -36,25 +34,21 @@ export default function departmentManager() {
         openCreate() {
             this.mode = 'create';
             this.form = {
-                department_id: null,
+                leave_type_id: null,
                 name: '',
-                code: '',
-                description: '',
-                manager_employee_id: '',
-                hr_employee_id: '',
+                max_days: '',
+                is_paid: '1',
             };
             this.showFormModal = true;
         },
 
-        openEdit(department) {
+        openEdit(leaveType) {
             this.mode = 'edit';
             this.form = {
-                department_id: department.department_id,
-                name: department.name,
-                code: department.code,
-                description: department.description ?? '',
-                manager_employee_id: department.manager_employee_id ?? '',
-                hr_employee_id: department.hr_employee_id ?? '',
+                leave_type_id: leaveType.leave_type_id,
+                name: leaveType.name,
+                max_days: leaveType.max_days,
+                is_paid: String(leaveType.is_paid),
             };
             this.showFormModal = true;
         },
@@ -63,24 +57,16 @@ export default function departmentManager() {
             this.showFormModal = false;
         },
 
-        openDelete(department) {
+        openDelete(leaveType) {
             this.deleteTarget = {
-                department_id: department.department_id,
-                name: department.name,
+                leave_type_id: leaveType.leave_type_id,
+                name: leaveType.name,
             };
             this.showDeleteModal = true;
         },
 
         closeDeleteModal() {
             this.showDeleteModal = false;
-        },
-
-        generateCode() {
-            this.form.code = this.form.name
-                .toUpperCase()
-                .trim()
-                .replace(/[^A-Z0-9]+/g, '-')
-                .replace(/(^-|-$)/g, '');
         },
 
         handleSearch() {
@@ -118,8 +104,8 @@ export default function departmentManager() {
             window.axios
                 .get(url)
                 .then((response) => {
-                    document.getElementById('departmentTableContainer').innerHTML = response.data;
-                    window.Alpine.initTree(document.getElementById('departmentTableContainer'));
+                    document.getElementById('leaveTypeTableContainer').innerHTML = response.data;
+                    window.Alpine.initTree(document.getElementById('leaveTypeTableContainer'));
                     window.history.pushState({}, '', url);
                     this.selected = [];
                     this.selectedCount = 0;
@@ -150,7 +136,7 @@ export default function departmentManager() {
 
         deleteSelected() {
             if (this.selectedCount === 0) return;
-            if (confirm(`Hapus ${this.selectedCount} departemen terpilih? Tindakan ini tidak dapat dibatalkan.`)) {
+            if (confirm(`Hapus ${this.selectedCount} jenis cuti terpilih? Tindakan ini tidak dapat dibatalkan.`)) {
                 const form = document.getElementById('bulk-delete-form');
                 if (form) form.submit();
             }

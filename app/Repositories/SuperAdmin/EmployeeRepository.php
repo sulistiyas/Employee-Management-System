@@ -83,6 +83,20 @@ class EmployeeRepository
             ->get();
     }
 
+    /**
+     * Ambil daftar employee dengan status aktif, untuk dropdown penunjukan
+     * manager atau HR penanggung jawab department.
+     *
+     * @return Collection<int, Employees>
+     */
+    public function getActiveEmployees(): Collection
+    {
+        return Employees::with('department', 'position')
+            ->where('employment_status', 'active')
+            ->orderBy('full_name')
+            ->get();
+    }
+
     public function create(array $data): Employees
     {
         return Employees::create($data);

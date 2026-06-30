@@ -14,13 +14,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::statement('TRUNCATE TABLE roles, departments, positions, employees, users RESTART IDENTITY CASCADE');
+        DB::statement('TRUNCATE TABLE roles, departments, positions, employees, users, leave_types RESTART IDENTITY CASCADE');
         $this->call([
             RoleSeeder::class,
             DepartmentSeeder::class,
             PositionSeeder::class,
             EmployeeSeeder::class,
+            DepartmentAssignmentSeeder::class,
             UserSeeder::class,
+            LeaveTypeSeeder::class,
         ]);
     }
 }

@@ -23,6 +23,11 @@ class Departments extends Model
         return $this->belongsTo(Employees::class, 'manager_employee_id', 'employee_id');
     }
 
+    public function departmentHr(): BelongsTo
+    {
+        return $this->belongsTo(Employees::class, 'hr_employee_id', 'employee_id');
+    }
+
     public function positions(): HasMany
     {
         return $this->hasMany(Positions::class, 'department_id', 'department_id');
