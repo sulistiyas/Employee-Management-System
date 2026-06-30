@@ -11,21 +11,21 @@ class ShiftSeeder extends Seeder
     {
         $shifts = [
             [
-                'code' => 'SH-PG-001',
+                'code' => 'SH-PG',
                 'name' => 'Pagi',
                 'start_time' => '07:00:00',
                 'end_time' => '15:00:00',
                 'late_tolerance_minutes' => 15,
             ],
             [
-                'code' => 'SH-SR-001',
+                'code' => 'SH-SR',
                 'name' => 'Sore',
                 'start_time' => '15:00:00',
                 'end_time' => '23:00:00',
                 'late_tolerance_minutes' => 15,
             ],
             [
-                'code' => 'SH-ML-001',
+                'code' => 'SH-ML',
                 'name' => 'Malam',
                 'start_time' => '23:00:00',
                 'end_time' => '07:00:00',

@@ -49,20 +49,4 @@ class LeaveRequests extends Model
     {
         return $this->belongsTo(Employees::class, 'approved_by', 'employee_id');
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-    public function hrApprovedBy(): BelongsTo
-    {
-        return $this->belongsTo(Employees::class, 'hr_approved_by', 'employee_id');
-    }
-
-    public function directorApprovedBy(): BelongsTo
-    {
-        return $this->belongsTo(Employees::class, 'director_approved_by', 'employee_id');
-    }
-=======
->>>>>>> parent of 85933c2 (update)
-=======
->>>>>>> parent of 85933c2 (update)
 }
