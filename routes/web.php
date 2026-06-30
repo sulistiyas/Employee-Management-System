@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\SuperAdmin\AttendanceController;
 use App\Http\Controllers\SuperAdmin\DashboardController;
 use App\Http\Controllers\SuperAdmin\DepartmentController;
 use App\Http\Controllers\SuperAdmin\EmployeeController;
+use App\Http\Controllers\SuperAdmin\LeaveRequestController;
 use App\Http\Controllers\SuperAdmin\LeaveTypeController;
 use App\Http\Controllers\SuperAdmin\PositionController;
 use App\Http\Controllers\SuperAdmin\RoleController;
@@ -37,12 +39,17 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+            Route::get('/attendances', [AttendanceController::class, 'index'])->name('attendances.index');
+            Route::post('/attendances', [AttendanceController::class, 'store'])->name('attendances.store');
+            Route::put('/attendances/{attendance}', [AttendanceController::class, 'update'])->name('attendances.update');
+            Route::delete('/attendances/{attendance}', [AttendanceController::class, 'destroy'])->name('attendances.destroy');
+            Route::delete('/attendances-bulk', [AttendanceController::class, 'bulkDestroy'])->name('attendances.bulk-destroy');
+
             //
             Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
             Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
             Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
             Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
-            Route::delete('/roles-bulk', [RoleController::class, 'bulkDestroy'])->name('roles.bulk-destroy');
 
             Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');
             Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
@@ -71,6 +78,14 @@ Route::middleware('auth')->group(function () {
             Route::put('/leave-types/{leave_type}', [LeaveTypeController::class, 'update'])->name('leave-types.update');
             Route::delete('/leave-types/{leave_type}', [LeaveTypeController::class, 'destroy'])->name('leave-types.destroy');
             Route::delete('/leave-types-bulk', [LeaveTypeController::class, 'bulkDestroy'])->name('leave-types.bulk-destroy');
+
+            Route::get('/leave-requests', [LeaveRequestController::class, 'index'])->name('leave-requests.index');
+            Route::post('/leave-requests', [LeaveRequestController::class, 'store'])->name('leave-requests.store');
+            Route::put('/leave-requests/{leave_request}', [LeaveRequestController::class, 'update'])->name('leave-requests.update');
+            Route::delete('/leave-requests/{leave_request}', [LeaveRequestController::class, 'destroy'])->name('leave-requests.destroy');
+            Route::delete('/leave-requests-bulk', [LeaveRequestController::class, 'bulkDestroy'])->name('leave-requests.bulk-destroy');
+            Route::put('/leave-requests/{leave_request}/approve', [LeaveRequestController::class, 'approve'])->name('leave-requests.approve');
+            Route::put('/leave-requests/{leave_request}/reject', [LeaveRequestController::class, 'reject'])->name('leave-requests.reject');
 
             Route::get('/users', [UserController::class, 'index'])->name('users.index');
             Route::post('/users', [UserController::class, 'store'])->name('users.store');
