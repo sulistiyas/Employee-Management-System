@@ -293,20 +293,46 @@ input, textarea, select {
     line-height: 1;
 }
 
-/* Toggle button */
-.ems-sidebar__toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 14px;
+/* Footer actions */
+.ems-sidebar__footer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding: 10px;
     border-top: 1px solid rgba(255,255,255,0.08);
-    color: rgba(255,255,255,0.5);
-    transition: color 0.15s;
     flex-shrink: 0;
 }
 
-.ems-sidebar__toggle:hover {
+.ems-sidebar__footer-form {
+    display: flex;
+    min-width: 0;
+}
+
+.ems-sidebar__footer-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 9px 0;
+    border-radius: var(--ems-radius-sm);
+    color: rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.04);
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ems-sidebar__footer-btn:hover {
+    background: rgba(255,255,255,0.1);
     color: #fff;
+}
+
+.ems-sidebar--closed .ems-sidebar__footer {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 8px 6px;
+}
+
+.ems-sidebar--closed .ems-sidebar__footer-btn {
+    padding: 8px 0;
 }
 
 /* ============================================================
