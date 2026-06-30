@@ -35,6 +35,4 @@ class LeaveRequests extends Model
     {
         return $this->belongsTo(Employees::class, 'director_approved_by', 'employee_id');
     }
-
-    
 }

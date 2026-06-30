@@ -52,17 +52,6 @@ class Employees extends Model
         return $this->hasMany(EmployeeShifts::class, 'employee_id', 'employee_id');
     }
 
-    /**
-     * Shift yang sedang aktif untuk karyawan ini, yaitu assignment dengan
-     * effective_date terbesar yang sudah berlaku (<= hari ini).
-     */
-    public function currentShift(): HasOne
-    {
-        return $this->hasOne(EmployeeShifts::class, 'employee_id', 'employee_id')
-            ->active()
-            ->orderByDesc('effective_date');
-    }
-
     public function leaveRequests(): HasMany
     {
         return $this->hasMany(LeaveRequests::class, 'employee_id', 'employee_id');

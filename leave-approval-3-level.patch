@@ -1,0 +1,851 @@
+diff --git a/app/Http/Controllers/Director/LeaveRequestController.php b/app/Http/Controllers/Director/LeaveRequestController.php
+new file mode 100644
+index 0000000..64a0784
+--- /dev/null
++++ b/app/Http/Controllers/Director/LeaveRequestController.php
+@@ -0,0 +1,50 @@
++<?php
++
++namespace App\Http\Controllers\Director;
++
++use App\Http\Controllers\Controller;
++use App\Models\LeaveRequests;
++use App\Services\LeaveRequestService;
++use Illuminate\Http\RedirectResponse;
++use Illuminate\Http\Request;
++use Illuminate\View\View;
++
++class LeaveRequestController extends Controller
++{
++    public function __construct(private LeaveRequestService $leaveRequestService) {}
++
++    public function index(Request $request): View
++    {
++        $leaveRequests = $this->leaveRequestService->getPendingForDirector($request->query('search'));
++
++        if ($request->ajax()) {
++            return view('director.leave-requests.table', [
++                'leaveRequests' => $leaveRequests,
++            ]);
++        }
++
++        return view('director.leave-requests.index', [
++            'leaveRequests' => $leaveRequests,
++        ]);
++    }
++
++    public function approve(Request $request, LeaveRequests $leaveRequest): RedirectResponse
++    {
++        $this->leaveRequestService->approve($leaveRequest, $request->user()->employee, 'pending_director');
++
++        return redirect()
++            ->route('director.leave-requests.index')
++            ->with('success', 'Pengajuan cuti disetujui (final).');
++    }
++
++    public function reject(Request $request, LeaveRequests $leaveRequest): RedirectResponse
++    {
++        $request->validate(['rejection_reason' => 'required|string|max:255']);
++
++        $this->leaveRequestService->reject($leaveRequest, $request->input('rejection_reason'), 'pending_director');
++
++        return redirect()
++            ->route('director.leave-requests.index')
++            ->with('success', 'Pengajuan cuti ditolak.');
++    }
++}
+diff --git a/app/Http/Controllers/Hr/LeaveRequestController.php b/app/Http/Controllers/Hr/LeaveRequestController.php
+new file mode 100644
+index 0000000..9b3b3f6
+--- /dev/null
++++ b/app/Http/Controllers/Hr/LeaveRequestController.php
+@@ -0,0 +1,50 @@
++<?php
++
++namespace App\Http\Controllers\Hr;
++
++use App\Http\Controllers\Controller;
++use App\Models\LeaveRequests;
++use App\Services\LeaveRequestService;
++use Illuminate\Http\RedirectResponse;
++use Illuminate\Http\Request;
++use Illuminate\View\View;
++
++class LeaveRequestController extends Controller
++{
++    public function __construct(private LeaveRequestService $leaveRequestService) {}
++
++    public function index(Request $request): View
++    {
++        $leaveRequests = $this->leaveRequestService->getPendingForHr($request->query('search'));
++
++        if ($request->ajax()) {
++            return view('hr.leave-requests.table', [
++                'leaveRequests' => $leaveRequests,
++            ]);
++        }
++
++        return view('hr.leave-requests.index', [
++            'leaveRequests' => $leaveRequests,
++        ]);
++    }
++
++    public function approve(Request $request, LeaveRequests $leaveRequest): RedirectResponse
++    {
++        $this->leaveRequestService->approve($leaveRequest, $request->user()->employee, 'pending_hr');
++
++        return redirect()
++            ->route('hr.leave-requests.index')
++            ->with('success', 'Pengajuan cuti disetujui dan diteruskan ke Director.');
++    }
++
++    public function reject(Request $request, LeaveRequests $leaveRequest): RedirectResponse
++    {
++        $request->validate(['rejection_reason' => 'required|string|max:255']);
++
++        $this->leaveRequestService->reject($leaveRequest, $request->input('rejection_reason'), 'pending_hr');
++
++        return redirect()
++            ->route('hr.leave-requests.index')
++            ->with('success', 'Pengajuan cuti ditolak.');
++    }
++}
+diff --git a/app/Http/Controllers/Manager/LeaveRequestController.php b/app/Http/Controllers/Manager/LeaveRequestController.php
+new file mode 100644
+index 0000000..5e4fff9
+--- /dev/null
++++ b/app/Http/Controllers/Manager/LeaveRequestController.php
+@@ -0,0 +1,53 @@
++<?php
++
++namespace App\Http\Controllers\Manager;
++
++use App\Http\Controllers\Controller;
++use App\Models\LeaveRequests;
++use App\Services\LeaveRequestService;
++use Illuminate\Http\RedirectResponse;
++use Illuminate\Http\Request;
++use Illuminate\View\View;
++
++class LeaveRequestController extends Controller
++{
++    public function __construct(private LeaveRequestService $leaveRequestService) {}
++
++    public function index(Request $request): View
++    {
++        $leaveRequests = $this->leaveRequestService->getPendingForManager(
++            $request->user()->employee->employee_id,
++            $request->query('search'),
++        );
++
++        if ($request->ajax()) {
++            return view('manager.leave-requests.table', [
++                'leaveRequests' => $leaveRequests,
++            ]);
++        }
++
++        return view('manager.leave-requests.index', [
++            'leaveRequests' => $leaveRequests,
++        ]);
++    }
++
++    public function approve(Request $request, LeaveRequests $leaveRequest): RedirectResponse
++    {
++        $this->leaveRequestService->approve($leaveRequest, $request->user()->employee, 'pending_manager');
++
++        return redirect()
++            ->route('manager.leave-requests.index')
++            ->with('success', 'Pengajuan cuti disetujui dan diteruskan ke HR.');
++    }
++
++    public function reject(Request $request, LeaveRequests $leaveRequest): RedirectResponse
++    {
++        $request->validate(['rejection_reason' => 'required|string|max:255']);
++
++        $this->leaveRequestService->reject($leaveRequest, $request->input('rejection_reason'), 'pending_manager');
++
++        return redirect()
++            ->route('manager.leave-requests.index')
++            ->with('success', 'Pengajuan cuti ditolak.');
++    }
++}
+diff --git a/app/Models/Employees.php b/app/Models/Employees.php
+index e7e8a59..d3ee7b0 100644
+--- a/app/Models/Employees.php
++++ b/app/Models/Employees.php
+@@ -57,9 +57,19 @@ public function leaveRequests(): HasMany
+         return $this->hasMany(LeaveRequests::class, 'employee_id', 'employee_id');
+     }
+ 
+-    public function approvedLeaveRequests(): HasMany
++    public function managerApprovedLeaveRequests(): HasMany
+     {
+-        return $this->hasMany(LeaveRequests::class, 'approved_by', 'employee_id');
++        return $this->hasMany(LeaveRequests::class, 'manager_approved_by', 'employee_id');
++    }
++
++    public function hrApprovedLeaveRequests(): HasMany
++    {
++        return $this->hasMany(LeaveRequests::class, 'hr_approved_by', 'employee_id');
++    }
++
++    public function directorApprovedLeaveRequests(): HasMany
++    {
++        return $this->hasMany(LeaveRequests::class, 'director_approved_by', 'employee_id');
+     }
+ 
+     public function managedDepartments(): HasMany
+diff --git a/app/Models/LeaveRequests.php b/app/Models/LeaveRequests.php
+index b1de394..54e977e 100644
+--- a/app/Models/LeaveRequests.php
++++ b/app/Models/LeaveRequests.php
+@@ -21,8 +21,18 @@ public function leaveType(): BelongsTo
+         return $this->belongsTo(LeaveTypes::class, 'leave_type_id', 'leave_type_id');
+     }
+ 
+-    public function approvedBy(): BelongsTo
++    public function managerApprovedBy(): BelongsTo
+     {
+-        return $this->belongsTo(Employees::class, 'approved_by', 'employee_id');
++        return $this->belongsTo(Employees::class, 'manager_approved_by', 'employee_id');
++    }
++
++    public function hrApprovedBy(): BelongsTo
++    {
++        return $this->belongsTo(Employees::class, 'hr_approved_by', 'employee_id');
++    }
++
++    public function directorApprovedBy(): BelongsTo
++    {
++        return $this->belongsTo(Employees::class, 'director_approved_by', 'employee_id');
+     }
+ }
+diff --git a/app/Repositories/LeaveRequestRepository.php b/app/Repositories/LeaveRequestRepository.php
+new file mode 100644
+index 0000000..74f6815
+--- /dev/null
++++ b/app/Repositories/LeaveRequestRepository.php
+@@ -0,0 +1,47 @@
++<?php
++
++namespace App\Repositories;
++
++use App\Models\LeaveRequests;
++use Illuminate\Pagination\LengthAwarePaginator;
++
++class LeaveRequestRepository
++{
++    public function getAllByStatus(
++        string $status,
++        ?string $search = null,
++        ?int $managerEmployeeId = null,
++        int $perPage = 10
++    ): LengthAwarePaginator {
++        return LeaveRequests::with(['employee.department', 'leaveType'])
++            ->where('status', $status)
++            ->when($managerEmployeeId, function ($query) use ($managerEmployeeId) {
++                $query->whereHas('employee.department', function ($q) use ($managerEmployeeId) {
++                    $q->where('manager_employee_id', $managerEmployeeId);
++                });
++            })
++            ->when($search, function ($query, $search) {
++                $query->whereHas('employee', fn ($q) => $q->where('full_name', 'like', "%{$search}%"));
++            })
++            ->orderByDesc('created_at')
++            ->paginate($perPage)
++            ->withQueryString();
++    }
++
++    public function findById(int $leaveRequestId): ?LeaveRequests
++    {
++        return LeaveRequests::find($leaveRequestId);
++    }
++
++    public function create(array $data): LeaveRequests
++    {
++        return LeaveRequests::create($data);
++    }
++
++    public function update(LeaveRequests $leaveRequest, array $data): LeaveRequests
++    {
++        $leaveRequest->update($data);
++
++        return $leaveRequest;
++    }
++}
+diff --git a/app/Services/LeaveRequestService.php b/app/Services/LeaveRequestService.php
+new file mode 100644
+index 0000000..9bdaf1f
+--- /dev/null
++++ b/app/Services/LeaveRequestService.php
+@@ -0,0 +1,92 @@
++<?php
++
++namespace App\Services;
++
++use App\Models\Employees;
++use App\Models\LeaveRequests;
++use App\Repositories\LeaveRequestRepository;
++use Illuminate\Pagination\LengthAwarePaginator;
++
++class LeaveRequestService
++{
++    public function __construct(private LeaveRequestRepository $leaveRequestRepository) {}
++
++    /**
++     * Buat pengajuan cuti baru. Jika pengaju adalah manager departemen,
++     * level approval manager dilewati otomatis (langsung pending_hr).
++     */
++    public function createLeaveRequest(array $data): LeaveRequests
++    {
++        $employee = Employees::findOrFail($data['employee_id']);
++
++        $data['status'] = $this->isDepartmentManager($employee)
++            ? 'pending_hr'
++            : 'pending_manager';
++
++        return $this->leaveRequestRepository->create($data);
++    }
++
++    public function getPendingForManager(int $managerEmployeeId, ?string $search = null): LengthAwarePaginator
++    {
++        return $this->leaveRequestRepository->getAllByStatus('pending_manager', $search, $managerEmployeeId);
++    }
++
++    public function getPendingForHr(?string $search = null): LengthAwarePaginator
++    {
++        return $this->leaveRequestRepository->getAllByStatus('pending_hr', $search);
++    }
++
++    public function getPendingForDirector(?string $search = null): LengthAwarePaginator
++    {
++        return $this->leaveRequestRepository->getAllByStatus('pending_director', $search);
++    }
++
++    /**
++     * Approve pengajuan cuti. $expectedStatus dipakai sebagai guard supaya
++     * approval hanya bisa dilakukan kalau pengajuan memang sedang di tahap
++     * yang sesuai dengan role yang mengakses (ditentukan oleh controller pemanggil).
++     */
++    public function approve(LeaveRequests $leaveRequest, Employees $approver, string $expectedStatus): LeaveRequests
++    {
++        if ($leaveRequest->status !== $expectedStatus) {
++            throw new \RuntimeException('Pengajuan cuti tidak berada pada tahap yang sesuai untuk disetujui.');
++        }
++
++        return match ($expectedStatus) {
++            'pending_manager' => $this->leaveRequestRepository->update($leaveRequest, [
++                'manager_approved_by' => $approver->employee_id,
++                'manager_approved_at' => now(),
++                'status' => 'pending_hr',
++            ]),
++            'pending_hr' => $this->leaveRequestRepository->update($leaveRequest, [
++                'hr_approved_by' => $approver->employee_id,
++                'hr_approved_at' => now(),
++                'status' => 'pending_director',
++            ]),
++            'pending_director' => $this->leaveRequestRepository->update($leaveRequest, [
++                'director_approved_by' => $approver->employee_id,
++                'director_approved_at' => now(),
++                'status' => 'approved',
++            ]),
++            default => throw new \RuntimeException('Tahap approval tidak dikenali.'),
++        };
++    }
++
++    public function reject(LeaveRequests $leaveRequest, string $reason, string $expectedStatus): LeaveRequests
++    {
++        if ($leaveRequest->status !== $expectedStatus) {
++            throw new \RuntimeException('Pengajuan cuti tidak berada pada tahap yang sesuai untuk ditolak.');
++        }
++
++        return $this->leaveRequestRepository->update($leaveRequest, [
++            'status' => 'rejected',
++            'rejected_at_level' => $expectedStatus,
++            'rejection_reason' => $reason,
++        ]);
++    }
++
++    private function isDepartmentManager(Employees $employee): bool
++    {
++        return $employee->managedDepartments()->exists();
++    }
++}
+diff --git a/database/migrations/2026_07_01_000000_add_approval_levels_to_leave_requests_table.php b/database/migrations/2026_07_01_000000_add_approval_levels_to_leave_requests_table.php
+new file mode 100644
+index 0000000..167cd1c
+--- /dev/null
++++ b/database/migrations/2026_07_01_000000_add_approval_levels_to_leave_requests_table.php
+@@ -0,0 +1,61 @@
++<?php
++
++use Illuminate\Database\Migrations\Migration;
++use Illuminate\Database\Schema\Blueprint;
++use Illuminate\Support\Facades\Schema;
++
++return new class extends Migration
++{
++    /**
++     * Run the migrations.
++     */
++    public function up(): void
++    {
++        Schema::table('leave_requests', function (Blueprint $table) {
++            $table->dropForeign(['approved_by']);
++            $table->dropColumn(['approved_by', 'approved_at']);
++
++            $table->foreignId('manager_approved_by')->nullable()->after('reason')
++                ->references('employee_id')->on('employees')->nullOnDelete();
++            $table->timestamp('manager_approved_at')->nullable()->after('manager_approved_by');
++
++            $table->foreignId('hr_approved_by')->nullable()->after('manager_approved_at')
++                ->references('employee_id')->on('employees')->nullOnDelete();
++            $table->timestamp('hr_approved_at')->nullable()->after('hr_approved_by');
++
++            $table->foreignId('director_approved_by')->nullable()->after('hr_approved_at')
++                ->references('employee_id')->on('employees')->nullOnDelete();
++            $table->timestamp('director_approved_at')->nullable()->after('director_approved_by');
++
++            $table->string('rejected_at_level')->nullable()->after('director_approved_at');
++            $table->text('rejection_reason')->nullable()->after('rejected_at_level');
++        });
++    }
++
++    /**
++     * Reverse the migrations.
++     */
++    public function down(): void
++    {
++        Schema::table('leave_requests', function (Blueprint $table) {
++            $table->dropForeign(['manager_approved_by']);
++            $table->dropForeign(['hr_approved_by']);
++            $table->dropForeign(['director_approved_by']);
++
++            $table->dropColumn([
++                'manager_approved_by',
++                'manager_approved_at',
++                'hr_approved_by',
++                'hr_approved_at',
++                'director_approved_by',
++                'director_approved_at',
++                'rejected_at_level',
++                'rejection_reason',
++            ]);
++
++            $table->foreignId('approved_by')->nullable()
++                ->references('employee_id')->on('employees')->nullOnDelete();
++            $table->timestamp('approved_at')->nullable();
++        });
++    }
++};
+diff --git a/resources/js/app.js b/resources/js/app.js
+index 4cb62c6..7721e87 100644
+--- a/resources/js/app.js
++++ b/resources/js/app.js
+@@ -5,6 +5,7 @@ import departmentManager from './components/departmentManager';
+ import positionManager from './components/positionManager';
+ import userManager from './components/userManager';
+ import employeeManager from './components/employeeManager';
++import leaveApprovalManager from './components/leaveApprovalManager';
+ 
+ import datatableFilter from './datatableFilter';
+ 
+@@ -32,6 +33,7 @@ Alpine.data('departmentManager', departmentManager);
+ Alpine.data('positionManager', positionManager);
+ Alpine.data('userManager', userManager);
+ Alpine.data('employeeManager', employeeManager);
++Alpine.data('leaveApprovalManager', leaveApprovalManager);
+ 
+ Alpine.data('datatableFilter', datatableFilter);
+ 
+diff --git a/resources/js/components/leaveApprovalManager.js b/resources/js/components/leaveApprovalManager.js
+new file mode 100644
+index 0000000..168978c
+--- /dev/null
++++ b/resources/js/components/leaveApprovalManager.js
+@@ -0,0 +1,82 @@
++export default function leaveApprovalManager(rolePrefix) {
++    return {
++        rolePrefix: rolePrefix,
++
++        showRejectModal: false,
++        rejectTarget: {
++            leave_request_id: null,
++            employee_name: '',
++        },
++        rejectionReason: '',
++
++        isLoadingTable: false,
++        searchQuery: '',
++
++        init() {
++            this.searchQuery = new URLSearchParams(window.location.search).get('search') || '';
++
++            window.addEventListener('popstate', () => {
++                this.loadTable(window.location.href);
++            });
++        },
++
++        openReject(leaveRequest) {
++            this.rejectTarget = {
++                leave_request_id: leaveRequest.leave_request_id,
++                employee_name: leaveRequest.employee_name,
++            };
++            this.rejectionReason = '';
++            this.showRejectModal = true;
++        },
++
++        closeRejectModal() {
++            this.showRejectModal = false;
++        },
++
++        handleSearch() {
++            const url = new URL(window.location.href);
++
++            if (this.searchQuery) {
++                url.searchParams.set('search', this.searchQuery);
++            } else {
++                url.searchParams.delete('search');
++            }
++            url.searchParams.delete('page');
++
++            this.loadTable(url.toString());
++        },
++
++        clearSearch() {
++            this.searchQuery = '';
++            this.handleSearch();
++        },
++
++        handlePaginationClick(event) {
++            const link = event.target.closest('.ems-pagination__btn[href]');
++
++            if (!link) {
++                return;
++            }
++
++            event.preventDefault();
++            this.loadTable(link.href);
++        },
++
++        loadTable(url) {
++            this.isLoadingTable = true;
++
++            window.axios
++                .get(url)
++                .then((response) => {
++                    document.getElementById('leaveRequestTableContainer').innerHTML = response.data;
++                    window.history.pushState({}, '', url);
++                })
++                .catch(() => {
++                    window.location.href = url;
++                })
++                .finally(() => {
++                    this.isLoadingTable = false;
++                });
++        },
++    };
++}
+diff --git a/resources/views/director/leave-requests/index.blade.php b/resources/views/director/leave-requests/index.blade.php
+new file mode 100644
+index 0000000..033bb15
+--- /dev/null
++++ b/resources/views/director/leave-requests/index.blade.php
+@@ -0,0 +1,12 @@
++@extends('layouts.app')
++
++@section('title', 'Persetujuan Cuti - Director')
++
++@section('content')
++    @include('leave-requests._index', [
++        'leaveRequests' => $leaveRequests,
++        'rolePrefix' => 'director',
++        'pageTitle' => 'Persetujuan Cuti Final',
++        'pageSubtitle' => 'Pengajuan cuti yang sudah disetujui Manager & HR, menunggu persetujuan final Anda.',
++    ])
++@endsection
+diff --git a/resources/views/director/leave-requests/table.blade.php b/resources/views/director/leave-requests/table.blade.php
+new file mode 100644
+index 0000000..4272b71
+--- /dev/null
++++ b/resources/views/director/leave-requests/table.blade.php
+@@ -0,0 +1 @@
++@include('leave-requests._table', ['leaveRequests' => $leaveRequests, 'rolePrefix' => 'director'])
+diff --git a/resources/views/hr/leave-requests/index.blade.php b/resources/views/hr/leave-requests/index.blade.php
+new file mode 100644
+index 0000000..122c7f3
+--- /dev/null
++++ b/resources/views/hr/leave-requests/index.blade.php
+@@ -0,0 +1,12 @@
++@extends('layouts.app')
++
++@section('title', 'Persetujuan Cuti - HR')
++
++@section('content')
++    @include('leave-requests._index', [
++        'leaveRequests' => $leaveRequests,
++        'rolePrefix' => 'hr',
++        'pageTitle' => 'Persetujuan Cuti',
++        'pageSubtitle' => 'Pengajuan cuti yang sudah disetujui Manager, menunggu persetujuan HR.',
++    ])
++@endsection
+diff --git a/resources/views/hr/leave-requests/table.blade.php b/resources/views/hr/leave-requests/table.blade.php
+new file mode 100644
+index 0000000..a526382
+--- /dev/null
++++ b/resources/views/hr/leave-requests/table.blade.php
+@@ -0,0 +1 @@
++@include('leave-requests._table', ['leaveRequests' => $leaveRequests, 'rolePrefix' => 'hr'])
+diff --git a/resources/views/leave-requests/_index.blade.php b/resources/views/leave-requests/_index.blade.php
+new file mode 100644
+index 0000000..eaa7674
+--- /dev/null
++++ b/resources/views/leave-requests/_index.blade.php
+@@ -0,0 +1,88 @@
++<div x-data="leaveApprovalManager('{{ $rolePrefix }}')">
++
++    {{-- Page header --}}
++    <div class="ems-page-header">
++        <div>
++            <h1 class="ems-page-title">{{ $pageTitle }}</h1>
++            <p class="ems-page-subtitle">{{ $pageSubtitle }}</p>
++        </div>
++    </div>
++
++    {{-- Table --}}
++    <div class="ems-card ems-card--flush" @click="handlePaginationClick($event)">
++        <div class="ems-table-toolbar">
++            <div class="ems-search-box">
++                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ems-search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
++
++                <input
++                    type="text"
++                    class="ems-search-input"
++                    placeholder="Cari nama karyawan..."
++                    x-model="searchQuery"
++                    @input.debounce.400ms="handleSearch()"
++                >
++
++                <span x-show="isLoadingTable" x-cloak class="ems-search-spinner">
++                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="ems-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
++                </span>
++
++                <button
++                    type="button"
++                    x-show="!isLoadingTable && searchQuery"
++                    x-cloak
++                    @click="clearSearch()"
++                    class="ems-search-clear"
++                    title="Hapus pencarian"
++                >
++                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
++                </button>
++            </div>
++        </div>
++
++        <div class="ems-card__body">
++            <div id="leaveRequestTableContainer" :class="{ 'ems-table-loading': isLoadingTable }">
++                @include('leave-requests._table', ['leaveRequests' => $leaveRequests, 'rolePrefix' => $rolePrefix])
++            </div>
++        </div>
++    </div>
++
++    <x-pagination :paginator="$leaveRequests" />
++
++    {{-- Modal: Confirm Reject --}}
++    <div class="ems-modal-overlay" x-show="showRejectModal" x-cloak @keydown.escape.window="closeRejectModal()">
++        <div class="ems-modal ems-modal--sm" @click.outside="closeRejectModal()">
++            <form method="POST" :action="'{{ url($rolePrefix . '/leave-requests') }}/' + rejectTarget.leave_request_id + '/reject'">
++                @csrf
++
++                <div class="ems-modal__header">
++                    <h2 class="ems-modal__title">Tolak Pengajuan Cuti</h2>
++                    <button type="button" class="ems-modal__close" @click="closeRejectModal()">
++                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
++                    </button>
++                </div>
++
++                <div class="ems-modal__body">
++                    <p>Tolak pengajuan cuti dari <strong x-text="rejectTarget.employee_name"></strong>?</p>
++
++                    <div class="ems-form-group">
++                        <label class="ems-form-label" for="rejection_reason">Alasan Penolakan</label>
++                        <textarea
++                            id="rejection_reason"
++                            name="rejection_reason"
++                            class="ems-form-control"
++                            x-model="rejectionReason"
++                            placeholder="Jelaskan alasan penolakan..."
++                            required
++                        ></textarea>
++                    </div>
++                </div>
++
++                <div class="ems-modal__footer">
++                    <button type="button" class="ems-btn ems-btn--ghost ems-btn--sm" @click="closeRejectModal()">Batal</button>
++                    <button type="submit" class="ems-btn-delete-confirm">Tolak</button>
++                </div>
++            </form>
++        </div>
++    </div>
++
++</div>
+diff --git a/resources/views/leave-requests/_table.blade.php b/resources/views/leave-requests/_table.blade.php
+new file mode 100644
+index 0000000..dab94ab
+--- /dev/null
++++ b/resources/views/leave-requests/_table.blade.php
+@@ -0,0 +1,66 @@
++<div class="ems-table-wrap">
++    <table class="ems-table">
++        <thead>
++            <tr>
++                <th>Karyawan</th>
++                <th>Departemen</th>
++                <th>Jenis Cuti</th>
++                <th>Periode</th>
++                <th>Total Hari</th>
++                <th>Alasan</th>
++                <th class="ems-table__th-right">Aksi</th>
++            </tr>
++        </thead>
++        <tbody>
++            @forelse ($leaveRequests as $leaveRequest)
++                <tr>
++                    <td class="ems-table__name">{{ $leaveRequest->employee->full_name }}</td>
++                    <td class="ems-table__muted">{{ $leaveRequest->employee->department->name ?? '-' }}</td>
++                    <td>{{ $leaveRequest->leaveType->name ?? '-' }}</td>
++                    <td>{{ $leaveRequest->start_date->format('d M Y') }} - {{ $leaveRequest->end_date->format('d M Y') }}</td>
++                    <td>{{ $leaveRequest->total_days }} hari</td>
++                    <td class="ems-table__muted">{{ \Illuminate\Support\Str::limit($leaveRequest->reason, 40) }}</td>
++                    <td>
++                        <div class="ems-table__actions">
++                            <form method="POST" action="{{ url($rolePrefix . '/leave-requests/' . $leaveRequest->leave_request_id . '/approve') }}">
++                                @csrf
++                                <button type="submit" class="ems-btn ems-btn--primary ems-btn--sm" title="Setujui">
++                                    Setujui
++                                </button>
++                            </form>
++
++                            <button
++                                type="button"
++                                class="ems-btn ems-btn--ghost ems-btn--sm"
++                                title="Tolak"
++                                @click="openReject({
++                                    leave_request_id: {{ $leaveRequest->leave_request_id }},
++                                    employee_name: @js($leaveRequest->employee->full_name),
++                                })"
++                            >
++                                Tolak
++                            </button>
++                        </div>
++                    </td>
++                </tr>
++            @empty
++                <tr>
++                    <td colspan="7">
++                        <div class="ems-empty">
++                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
++                            <p>
++                                @if (request('search'))
++                                    Pengajuan cuti tidak ditemukan untuk pencarian "{{ request('search') }}"
++                                @else
++                                    Tidak ada pengajuan cuti yang menunggu persetujuan
++                                @endif
++                            </p>
++                        </div>
++                    </td>
++                </tr>
++            @endforelse
++        </tbody>
++    </table>
++</div>
++
++<x-pagination :paginator="$leaveRequests" />
+diff --git a/resources/views/manager/leave-requests/index.blade.php b/resources/views/manager/leave-requests/index.blade.php
+new file mode 100644
+index 0000000..23d8bdc
+--- /dev/null
++++ b/resources/views/manager/leave-requests/index.blade.php
+@@ -0,0 +1,12 @@
++@extends('layouts.app')
++
++@section('title', 'Persetujuan Cuti - Manager')
++
++@section('content')
++    @include('leave-requests._index', [
++        'leaveRequests' => $leaveRequests,
++        'rolePrefix' => 'manager',
++        'pageTitle' => 'Persetujuan Cuti',
++        'pageSubtitle' => 'Pengajuan cuti dari tim Anda yang menunggu persetujuan.',
++    ])
++@endsection
+diff --git a/resources/views/manager/leave-requests/table.blade.php b/resources/views/manager/leave-requests/table.blade.php
+new file mode 100644
+index 0000000..b52878c
+--- /dev/null
++++ b/resources/views/manager/leave-requests/table.blade.php
+@@ -0,0 +1 @@
++@include('leave-requests._table', ['leaveRequests' => $leaveRequests, 'rolePrefix' => 'manager'])
+diff --git a/routes/web.php b/routes/web.php
+index 91cee14..04b23d0 100644
+--- a/routes/web.php
++++ b/routes/web.php
+@@ -1,6 +1,9 @@
+ <?php
+ 
+ use App\Http\Controllers\Auth\AuthController;
++use App\Http\Controllers\Director\LeaveRequestController as DirectorLeaveRequestController;
++use App\Http\Controllers\Hr\LeaveRequestController as HrLeaveRequestController;
++use App\Http\Controllers\Manager\LeaveRequestController as ManagerLeaveRequestController;
+ use App\Http\Controllers\SuperAdmin\DashboardController;
+ use App\Http\Controllers\SuperAdmin\DepartmentController;
+ use App\Http\Controllers\SuperAdmin\EmployeeController;
+@@ -24,11 +27,44 @@
+ 
+     // ── Dashboard per Role ──
+     // Tambahkan controller yang sesuai saat modul dashboard role lain dikembangkan.
+-    Route::get('/dashboard/director', fn () => 'Director Dashboard')->name('dashboard.director');
+-    Route::get('/dashboard/manager', fn () => 'Manager Dashboard')->name('dashboard.manager');
+-    Route::get('/dashboard/hr', fn () => 'HR Dashboard')->name('dashboard.hr');
+     Route::get('/dashboard/staff', fn () => 'Staff Dashboard')->name('dashboard.staff');
+ 
++    // ── Manager ──
++    Route::middleware('role:manager')
++        ->prefix('manager')
++        ->name('manager.')
++        ->group(function () {
++            Route::get('/dashboard', fn () => 'Manager Dashboard')->name('dashboard');
++
++            Route::get('/leave-requests', [ManagerLeaveRequestController::class, 'index'])->name('leave-requests.index');
++            Route::post('/leave-requests/{leaveRequest}/approve', [ManagerLeaveRequestController::class, 'approve'])->name('leave-requests.approve');
++            Route::post('/leave-requests/{leaveRequest}/reject', [ManagerLeaveRequestController::class, 'reject'])->name('leave-requests.reject');
++        });
++
++    // ── HR ──
++    Route::middleware('role:hr')
++        ->prefix('hr')
++        ->name('hr.')
++        ->group(function () {
++            Route::get('/dashboard', fn () => 'HR Dashboard')->name('dashboard');
++
++            Route::get('/leave-requests', [HrLeaveRequestController::class, 'index'])->name('leave-requests.index');
++            Route::post('/leave-requests/{leaveRequest}/approve', [HrLeaveRequestController::class, 'approve'])->name('leave-requests.approve');
++            Route::post('/leave-requests/{leaveRequest}/reject', [HrLeaveRequestController::class, 'reject'])->name('leave-requests.reject');
++        });
++
++    // ── Director ──
++    Route::middleware('role:director')
++        ->prefix('director')
++        ->name('director.')
++        ->group(function () {
++            Route::get('/dashboard', fn () => 'Director Dashboard')->name('dashboard');
++
++            Route::get('/leave-requests', [DirectorLeaveRequestController::class, 'index'])->name('leave-requests.index');
++            Route::post('/leave-requests/{leaveRequest}/approve', [DirectorLeaveRequestController::class, 'approve'])->name('leave-requests.approve');
++            Route::post('/leave-requests/{leaveRequest}/reject', [DirectorLeaveRequestController::class, 'reject'])->name('leave-requests.reject');
++        });
++
+     // ── Super Admin ──
+     Route::middleware('role:super-admin')
+         ->prefix('super-admin')
