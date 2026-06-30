@@ -14,7 +14,9 @@ class LeaveRequests extends Model
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
-        'approved_at' => 'datetime',
+        'manager_approved_at' => 'datetime',
+        'hr_approved_at' => 'datetime',
+        'director_approved_at' => 'datetime',
     ];
 
     protected $fillable = [
@@ -25,12 +27,20 @@ class LeaveRequests extends Model
         'total_days',
         'reason',
         'status',
-        'approved_by',
-        'approved_at',
+        'manager_approved_by',
+        'manager_approved_at',
+        'hr_approved_by',
+        'hr_approved_at',
+        'director_approved_by',
+        'director_approved_at',
+        'rejected_at_level',
+        'rejection_reason',
     ];
 
     const STATUSES = [
-        'pending' => 'Menunggu Persetujuan',
+        'pending_manager' => 'Menunggu Persetujuan Manager',
+        'pending_hr' => 'Menunggu Persetujuan HR',
+        'pending_director' => 'Menunggu Persetujuan Director',
         'approved' => 'Disetujui',
         'rejected' => 'Ditolak',
     ];
@@ -45,8 +55,18 @@ class LeaveRequests extends Model
         return $this->belongsTo(LeaveTypes::class, 'leave_type_id', 'leave_type_id');
     }
 
-    public function approvedBy(): BelongsTo
+    public function managerApprovedBy(): BelongsTo
     {
-        return $this->belongsTo(Employees::class, 'approved_by', 'employee_id');
+        return $this->belongsTo(Employees::class, 'manager_approved_by', 'employee_id');
+    }
+
+    public function hrApprovedBy(): BelongsTo
+    {
+        return $this->belongsTo(Employees::class, 'hr_approved_by', 'employee_id');
+    }
+
+    public function directorApprovedBy(): BelongsTo
+    {
+        return $this->belongsTo(Employees::class, 'director_approved_by', 'employee_id');
     }
 }

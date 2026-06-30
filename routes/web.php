@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Director\LeaveRequestController as DirectorLeaveRequestController;
+use App\Http\Controllers\Hr\LeaveRequestController as HrLeaveRequestController;
+use App\Http\Controllers\Manager\LeaveRequestController as ManagerLeaveRequestController;
 use App\Http\Controllers\SuperAdmin\AttendanceController;
 use App\Http\Controllers\SuperAdmin\DashboardController;
 use App\Http\Controllers\SuperAdmin\DepartmentController;
@@ -79,13 +82,8 @@ Route::middleware('auth')->group(function () {
             Route::delete('/leave-types/{leave_type}', [LeaveTypeController::class, 'destroy'])->name('leave-types.destroy');
             Route::delete('/leave-types-bulk', [LeaveTypeController::class, 'bulkDestroy'])->name('leave-types.bulk-destroy');
 
+            // Leave requests: read-only monitor. Approve/reject dipindah ke Manager/HR/Director.
             Route::get('/leave-requests', [LeaveRequestController::class, 'index'])->name('leave-requests.index');
-            Route::post('/leave-requests', [LeaveRequestController::class, 'store'])->name('leave-requests.store');
-            Route::put('/leave-requests/{leave_request}', [LeaveRequestController::class, 'update'])->name('leave-requests.update');
-            Route::delete('/leave-requests/{leave_request}', [LeaveRequestController::class, 'destroy'])->name('leave-requests.destroy');
-            Route::delete('/leave-requests-bulk', [LeaveRequestController::class, 'bulkDestroy'])->name('leave-requests.bulk-destroy');
-            Route::put('/leave-requests/{leave_request}/approve', [LeaveRequestController::class, 'approve'])->name('leave-requests.approve');
-            Route::put('/leave-requests/{leave_request}/reject', [LeaveRequestController::class, 'reject'])->name('leave-requests.reject');
 
             Route::get('/users', [UserController::class, 'index'])->name('users.index');
             Route::post('/users', [UserController::class, 'store'])->name('users.store');
@@ -100,5 +98,35 @@ Route::middleware('auth')->group(function () {
             Route::delete('/employees-bulk', [EmployeeController::class, 'bulkDestroy'])->name('employees.bulk-destroy');
             // Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
             // Route::get('/settings', [SettingController::class, 'index'])->name('settings');
+        });
+
+    // ── Manager ──
+    Route::middleware('role:manager')
+        ->prefix('manager')
+        ->name('manager.')
+        ->group(function () {
+            Route::get('/leave-requests', [ManagerLeaveRequestController::class, 'index'])->name('leave-requests.index');
+            Route::put('/leave-requests/{leaveRequest}/approve', [ManagerLeaveRequestController::class, 'approve'])->name('leave-requests.approve');
+            Route::put('/leave-requests/{leaveRequest}/reject', [ManagerLeaveRequestController::class, 'reject'])->name('leave-requests.reject');
+        });
+
+    // ── HR ──
+    Route::middleware('role:hr')
+        ->prefix('hr')
+        ->name('hr.')
+        ->group(function () {
+            Route::get('/leave-requests', [HrLeaveRequestController::class, 'index'])->name('leave-requests.index');
+            Route::put('/leave-requests/{leaveRequest}/approve', [HrLeaveRequestController::class, 'approve'])->name('leave-requests.approve');
+            Route::put('/leave-requests/{leaveRequest}/reject', [HrLeaveRequestController::class, 'reject'])->name('leave-requests.reject');
+        });
+
+    // ── Director ──
+    Route::middleware('role:director')
+        ->prefix('director')
+        ->name('director.')
+        ->group(function () {
+            Route::get('/leave-requests', [DirectorLeaveRequestController::class, 'index'])->name('leave-requests.index');
+            Route::put('/leave-requests/{leaveRequest}/approve', [DirectorLeaveRequestController::class, 'approve'])->name('leave-requests.approve');
+            Route::put('/leave-requests/{leaveRequest}/reject', [DirectorLeaveRequestController::class, 'reject'])->name('leave-requests.reject');
         });
 });

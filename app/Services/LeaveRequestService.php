@@ -41,6 +41,11 @@ class LeaveRequestService
         return $this->leaveRequestRepository->getAllByStatus('pending_director', $search);
     }
 
+    public function getAllForMonitor(?string $search = null, ?string $status = null): LengthAwarePaginator
+    {
+        return $this->leaveRequestRepository->getAllForMonitor($search, $status);
+    }
+
     /**
      * Approve pengajuan cuti. $expectedStatus dipakai sebagai guard supaya
      * approval hanya bisa dilakukan kalau pengajuan memang sedang di tahap
@@ -89,4 +94,6 @@ class LeaveRequestService
     {
         return $employee->managedDepartments()->exists();
     }
+
+    
 }
