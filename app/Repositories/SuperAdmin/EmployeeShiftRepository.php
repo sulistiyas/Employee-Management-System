@@ -11,11 +11,25 @@ use Illuminate\Support\Carbon;
 class EmployeeShiftRepository
 {
     /**
+     * Kolom yang boleh dipakai untuk sorting beserta mapping kolom aktualnya.
+     */
+    private const SORTABLE_COLUMNS = [
+        'employee_number' => 'employees.employee_number',
+        'full_name' => 'employees.full_name',
+        'effective_date' => 'employee_shifts.effective_date',
+    ];
+
+    /**
      * Karyawan yang sedang aktif di shift tertentu (assignment terbaru per
      * karyawan yang sudah berlaku), untuk ditampilkan di halaman detail shift.
      */
-    public function getActiveByShift(int $shiftId, ?string $search = null, int $perPage = 10): LengthAwarePaginator
-    {
+    public function getActiveByShift(
+        int $shiftId,
+        ?string $search = null,
+        ?string $sort = null,
+        string $dir = 'asc',
+        int $perPage = 10
+    ): LengthAwarePaginator {
         // Ambil employee_shift_id terbaru per employee yang sudah berlaku,
         // lalu filter ke shift yang dimaksud.
         $latestIdsPerEmployee = EmployeeShifts::query()
@@ -23,7 +37,7 @@ class EmployeeShiftRepository
             ->where('effective_date', '<=', now()->toDateString())
             ->groupBy('employee_id');
 
-        return EmployeeShifts::with('employee.department', 'employee.position', 'changedBy')
+        $query = EmployeeShifts::with('employee.department', 'employee.position', 'changedBy')
             ->whereIn('employee_shift_id', $latestIdsPerEmployee)
             ->where('shift_id', $shiftId)
             ->when($search, function ($query, $search) {
@@ -31,10 +45,22 @@ class EmployeeShiftRepository
                     $q->where('full_name', 'like', "%{$search}%")
                         ->orWhere('employee_number', 'like', "%{$search}%");
                 });
-            })
-            ->orderByDesc('effective_date')
-            ->paginate($perPage)
-            ->withQueryString();
+            });
+
+        if ($sort && array_key_exists($sort, self::SORTABLE_COLUMNS)) {
+            $dir = $dir === 'desc' ? 'desc' : 'asc';
+
+            if (in_array($sort, ['employee_number', 'full_name'])) {
+                $query->join('employees', 'employees.employee_id', '=', 'employee_shifts.employee_id')
+                    ->select('employee_shifts.*');
+            }
+
+            $query->orderBy(self::SORTABLE_COLUMNS[$sort], $dir);
+        } else {
+            $query->orderByDesc('effective_date');
+        }
+
+        return $query->paginate($perPage)->withQueryString();
     }
 
     /**

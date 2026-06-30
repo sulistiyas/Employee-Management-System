@@ -10,9 +10,18 @@ class RoleService
 {
     public function __construct(private RoleRepository $roleRepository) {}
 
-    public function getAllRoles(?string $search = null): LengthAwarePaginator
+    public function getAllRoles(
+        ?string $search = null,
+        ?string $sort = null,
+        string $dir = 'asc',
+        int $perPage = 10
+    ): LengthAwarePaginator {
+        return $this->roleRepository->getAll($search, $sort, $dir, $perPage);
+    }
+
+    public function deleteManyRoles(array $roleIds): int
     {
-        return $this->roleRepository->getAll($search);
+        return $this->roleRepository->deleteMany($roleIds);
     }
 
     public function findRole(int $roleId): ?Roles

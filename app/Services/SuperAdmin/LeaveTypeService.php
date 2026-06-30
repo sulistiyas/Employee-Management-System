@@ -10,9 +10,13 @@ class LeaveTypeService
 {
     public function __construct(private LeaveTypeRepository $leaveTypeRepository) {}
 
-    public function getAllLeaveTypes(?string $search = null): LengthAwarePaginator
-    {
-        return $this->leaveTypeRepository->getAll($search);
+    public function getAllLeaveTypes(
+        ?string $search = null,
+        ?string $sort = null,
+        string $dir = 'asc',
+        int $perPage = 10
+    ): LengthAwarePaginator {
+        return $this->leaveTypeRepository->getAll($search, $sort, $dir, $perPage);
     }
 
     public function findLeaveType(int $leaveTypeId): ?LeaveTypes

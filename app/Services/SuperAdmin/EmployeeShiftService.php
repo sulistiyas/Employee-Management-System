@@ -12,9 +12,14 @@ class EmployeeShiftService
 {
     public function __construct(private EmployeeShiftRepository $employeeShiftRepository) {}
 
-    public function getActiveByShift(int $shiftId, ?string $search = null, int $perPage = 10): LengthAwarePaginator
-    {
-        return $this->employeeShiftRepository->getActiveByShift($shiftId, $search, $perPage);
+    public function getActiveByShift(
+        int $shiftId,
+        ?string $search = null,
+        ?string $sort = null,
+        string $dir = 'asc',
+        int $perPage = 10
+    ): LengthAwarePaginator {
+        return $this->employeeShiftRepository->getActiveByShift($shiftId, $search, $sort, $dir, $perPage);
     }
 
     /**

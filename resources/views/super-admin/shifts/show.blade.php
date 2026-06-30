@@ -43,10 +43,20 @@
                         >
                     </div>
                 </div>
-                <div class="ems-dt-toolbar__right" x-show="selectedCount > 0" x-cloak>
-                    <button type="button" class="ems-btn ems-btn--danger-soft ems-btn--sm" @click="openRemoveBulk()">
-                        Copot <span x-text="selectedCount"></span> Terpilih
-                    </button>
+                <div class="ems-dt-toolbar__right">
+                    <div class="ems-dt-perpage">
+                        <label for="assign_per_page">Tampilkan</label>
+                        <select id="assign_per_page" class="ems-dt-perpage__select" x-model="perPage" @change="changePerPage()">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                    <div x-show="selectedCount > 0" x-cloak>
+                        <button type="button" class="ems-btn ems-btn--danger-soft ems-btn--sm" @click="openRemoveBulk()">
+                            Copot <span x-text="selectedCount"></span> Terpilih
+                        </button>
+                    </div>
                 </div>
             </div>
 

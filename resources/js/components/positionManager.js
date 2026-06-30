@@ -21,10 +21,15 @@ export default function positionManager() {
         selected: [],
         selectedCount: 0,
         allSelected: false,
+        sortColumn: '',
+        sortDirection: 'asc',
 
         init() {
-            this.searchQuery = new URLSearchParams(window.location.search).get('search') || '';
-            this.perPage = new URLSearchParams(window.location.search).get('per_page') || '10';
+            const params = new URLSearchParams(window.location.search);
+            this.searchQuery = params.get('search') || '';
+            this.perPage = params.get('per_page') || '10';
+            this.sortColumn = params.get('sort') || '';
+            this.sortDirection = params.get('dir') || 'asc';
 
             window.addEventListener('popstate', () => {
                 this.loadTable(window.location.href);
@@ -69,22 +74,49 @@ export default function positionManager() {
             this.showDeleteModal = false;
         },
 
-        handleSearch() {
+        buildUrl() {
             const url = new URL(window.location.href);
 
-            if (this.searchQuery) {
-                url.searchParams.set('search', this.searchQuery);
-            } else {
-                url.searchParams.delete('search');
+            if (this.searchQuery) url.searchParams.set('search', this.searchQuery);
+            else url.searchParams.delete('search');
+
+            if (this.sortColumn) {
+                url.searchParams.set('sort', this.sortColumn);
+                url.searchParams.set('dir', this.sortDirection);
             }
+
+            url.searchParams.set('per_page', this.perPage);
             url.searchParams.delete('page');
 
-            this.loadTable(url.toString());
+            return url;
+        },
+
+        handleSearch() {
+            this.loadTable(this.buildUrl().toString());
         },
 
         clearSearch() {
             this.searchQuery = '';
             this.handleSearch();
+        },
+
+        changePerPage() {
+            this.loadTable(this.buildUrl().toString());
+        },
+
+        sortBy(column) {
+            if (this.sortColumn === column) {
+                this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                this.sortColumn = column;
+                this.sortDirection = 'asc';
+            }
+            this.loadTable(this.buildUrl().toString());
+        },
+
+        getSortClass(column) {
+            if (this.sortColumn !== column) return '';
+            return this.sortDirection === 'asc' ? 'ems-dt__sort-icon--asc' : 'ems-dt__sort-icon--desc';
         },
 
         handlePaginationClick(event) {
@@ -104,8 +136,9 @@ export default function positionManager() {
             window.axios
                 .get(url)
                 .then((response) => {
-                    document.getElementById('positionTableContainer').innerHTML = response.data;
-                    window.Alpine.initTree(document.getElementById('positionTableContainer'));
+                    const container = document.getElementById('positionTableContainer');
+                    container.innerHTML = response.data;
+                    window.Alpine.initTree(container);
                     window.history.pushState({}, '', url);
                     this.selected = [];
                     this.selectedCount = 0;

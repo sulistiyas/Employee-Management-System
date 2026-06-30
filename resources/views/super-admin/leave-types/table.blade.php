@@ -5,8 +5,24 @@
                 <th class="ems-dt__checkbox">
                     <input type="checkbox" class="ems-dt__check" @change="toggleAll($event)" :checked="allSelected">
                 </th>
-                <th>Nama Jenis Cuti</th>
-                <th>Maksimal Hari</th>
+                <th>
+                    <span class="ems-dt__sort" @click="sortBy('name')">
+                        Nama Jenis Cuti
+                        <span class="ems-dt__sort-icon" :class="getSortClass('name')">
+                            <svg class="ems-dt__sort-up" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6l6 8H6z"/></svg>
+                            <svg class="ems-dt__sort-down" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l-6-8h12z"/></svg>
+                        </span>
+                    </span>
+                </th>
+                <th>
+                    <span class="ems-dt__sort" @click="sortBy('max_days')">
+                        Maksimal Hari
+                        <span class="ems-dt__sort-icon" :class="getSortClass('max_days')">
+                            <svg class="ems-dt__sort-up" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6l6 8H6z"/></svg>
+                            <svg class="ems-dt__sort-down" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 18l-6-8h12z"/></svg>
+                        </span>
+                    </span>
+                </th>
                 <th>Status</th>
                 <th>Jumlah Pengajuan</th>
                 <th class="ems-table__th-right">Aksi</th>

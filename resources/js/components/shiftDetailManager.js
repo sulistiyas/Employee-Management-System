@@ -3,9 +3,12 @@ export default function shiftDetailManager() {
         // Table karyawan aktif di shift ini
         isLoadingTable: false,
         searchQuery: '',
+        perPage: '10',
         selected: [],
         selectedCount: 0,
         allSelected: false,
+        sortColumn: '',
+        sortDirection: 'asc',
 
         // Modal assign
         showAssignModal: false,
@@ -24,6 +27,9 @@ export default function shiftDetailManager() {
         init() {
             const params = new URLSearchParams(window.location.search);
             this.searchQuery = params.get('search') || '';
+            this.perPage = params.get('per_page') || '10';
+            this.sortColumn = params.get('sort') || '';
+            this.sortDirection = params.get('dir') || 'asc';
 
             window.addEventListener('popstate', () => {
                 this.loadTable(window.location.href);
@@ -31,15 +37,49 @@ export default function shiftDetailManager() {
         },
 
         // ── Table: search & pagination ──
-        handleSearch() {
+        buildUrl() {
             const url = new URL(window.location.href);
-            if (this.searchQuery) {
-                url.searchParams.set('search', this.searchQuery);
-            } else {
-                url.searchParams.delete('search');
+
+            if (this.searchQuery) url.searchParams.set('search', this.searchQuery);
+            else url.searchParams.delete('search');
+
+            if (this.sortColumn) {
+                url.searchParams.set('sort', this.sortColumn);
+                url.searchParams.set('dir', this.sortDirection);
             }
+
+            url.searchParams.set('per_page', this.perPage);
             url.searchParams.delete('page');
-            this.loadTable(url.toString());
+
+            return url;
+        },
+
+        handleSearch() {
+            this.loadTable(this.buildUrl().toString());
+        },
+
+        clearSearch() {
+            this.searchQuery = '';
+            this.handleSearch();
+        },
+
+        changePerPage() {
+            this.loadTable(this.buildUrl().toString());
+        },
+
+        sortBy(column) {
+            if (this.sortColumn === column) {
+                this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                this.sortColumn = column;
+                this.sortDirection = 'asc';
+            }
+            this.loadTable(this.buildUrl().toString());
+        },
+
+        getSortClass(column) {
+            if (this.sortColumn !== column) return '';
+            return this.sortDirection === 'asc' ? 'ems-dt__sort-icon--asc' : 'ems-dt__sort-icon--desc';
         },
 
         loadTable(url) {

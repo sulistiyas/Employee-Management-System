@@ -20,7 +20,12 @@ class DepartmentController extends Controller
 
     public function index(Request $request): View
     {
-        $departments = $this->departmentService->getAllDepartments($request->query('search'));
+        $departments = $this->departmentService->getAllDepartments(
+            search: $request->query('search'),
+            sort: $request->query('sort'),
+            dir: $request->query('dir', 'asc'),
+            perPage: (int) $request->query('per_page', 10)
+        );
 
         if ($request->ajax()) {
             return view('super-admin.departments.table', [

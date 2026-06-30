@@ -7,15 +7,33 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class LeaveTypeRepository
 {
-    public function getAll(?string $search = null, int $perPage = 10): LengthAwarePaginator
-    {
-        return LeaveTypes::withCount('leaveRequests')
+    /**
+     * Kolom yang boleh dipakai untuk sorting beserta mapping kolom aktualnya.
+     */
+    private const SORTABLE_COLUMNS = [
+        'name' => 'name',
+        'max_days' => 'max_days',
+    ];
+
+    public function getAll(
+        ?string $search = null,
+        ?string $sort = null,
+        string $dir = 'asc',
+        int $perPage = 10
+    ): LengthAwarePaginator {
+        $query = LeaveTypes::withCount('leaveRequests')
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%");
-            })
-            ->orderBy('name')
-            ->paginate($perPage)
-            ->withQueryString();
+            });
+
+        if ($sort && array_key_exists($sort, self::SORTABLE_COLUMNS)) {
+            $dir = $dir === 'desc' ? 'desc' : 'asc';
+            $query->orderBy(self::SORTABLE_COLUMNS[$sort], $dir);
+        } else {
+            $query->orderBy('name');
+        }
+
+        return $query->paginate($perPage)->withQueryString();
     }
 
     public function findById(int $leaveTypeId): ?LeaveTypes

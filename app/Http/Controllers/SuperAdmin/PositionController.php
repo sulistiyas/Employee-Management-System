@@ -17,7 +17,12 @@ class PositionController extends Controller
 
     public function index(Request $request): View
     {
-        $positions = $this->positionService->getAllPositions($request->query('search'));
+        $positions = $this->positionService->getAllPositions(
+            search: $request->query('search'),
+            sort: $request->query('sort'),
+            dir: $request->query('dir', 'asc'),
+            perPage: (int) $request->query('per_page', 10)
+        );
         $departments = Departments::orderBy('name')->get();
 
         if ($request->ajax()) {

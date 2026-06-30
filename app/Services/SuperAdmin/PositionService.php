@@ -10,9 +10,13 @@ class PositionService
 {
     public function __construct(private PositionRepository $positionRepository) {}
 
-    public function getAllPositions(?string $search = null): LengthAwarePaginator
-    {
-        return $this->positionRepository->getAll($search);
+    public function getAllPositions(
+        ?string $search = null,
+        ?string $sort = null,
+        string $dir = 'asc',
+        int $perPage = 10
+    ): LengthAwarePaginator {
+        return $this->positionRepository->getAll($search, $sort, $dir, $perPage);
     }
 
     public function findPosition(int $positionId): ?Positions

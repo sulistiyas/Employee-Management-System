@@ -7,18 +7,36 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class ShiftRepository
 {
-    public function getAll(?string $search = null, int $perPage = 10): LengthAwarePaginator
-    {
-        return Shifts::withCount('employeeShifts')
+    /**
+     * Kolom yang boleh dipakai untuk sorting beserta mapping kolom aktualnya.
+     */
+    private const SORTABLE_COLUMNS = [
+        'name' => 'name',
+        'code' => 'code',
+    ];
+
+    public function getAll(
+        ?string $search = null,
+        ?string $sort = null,
+        string $dir = 'asc',
+        int $perPage = 10
+    ): LengthAwarePaginator {
+        $query = Shifts::withCount('employeeShifts')
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
                         ->orWhere('code', 'like', "%{$search}%");
                 });
-            })
-            ->orderBy('name')
-            ->paginate($perPage)
-            ->withQueryString();
+            });
+
+        if ($sort && array_key_exists($sort, self::SORTABLE_COLUMNS)) {
+            $dir = $dir === 'desc' ? 'desc' : 'asc';
+            $query->orderBy(self::SORTABLE_COLUMNS[$sort], $dir);
+        } else {
+            $query->orderBy('name');
+        }
+
+        return $query->paginate($perPage)->withQueryString();
     }
 
     public function findById(int $shiftId): ?Shifts

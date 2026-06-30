@@ -25,7 +25,12 @@ class ShiftController extends Controller
     public function index(Request $request): View
     {
         $perPage = (int) $request->query('per_page', 10);
-        $shifts  = $this->shiftService->getAllShifts($request->query('search'), $perPage);
+        $shifts  = $this->shiftService->getAllShifts(
+            search: $request->query('search'),
+            sort: $request->query('sort'),
+            dir: $request->query('dir', 'asc'),
+            perPage: $perPage
+        );
 
         if ($request->ajax()) {
             return view('super-admin.shifts.table', ['shifts' => $shifts]);
@@ -47,6 +52,8 @@ class ShiftController extends Controller
         $assignments = $this->employeeShiftService->getActiveByShift(
             $shift->shift_id,
             $request->query('search'),
+            $request->query('sort'),
+            $request->query('dir', 'asc'),
             $perPage
         );
 

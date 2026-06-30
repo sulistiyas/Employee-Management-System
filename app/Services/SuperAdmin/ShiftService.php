@@ -10,9 +10,13 @@ class ShiftService
 {
     public function __construct(private ShiftRepository $shiftRepository) {}
 
-    public function getAllShifts(?string $search = null, int $perPage = 10): LengthAwarePaginator
-    {
-        return $this->shiftRepository->getAll($search, $perPage);
+    public function getAllShifts(
+        ?string $search = null,
+        ?string $sort = null,
+        string $dir = 'asc',
+        int $perPage = 10
+    ): LengthAwarePaginator {
+        return $this->shiftRepository->getAll($search, $sort, $dir, $perPage);
     }
 
     public function findShift(int $shiftId): ?Shifts

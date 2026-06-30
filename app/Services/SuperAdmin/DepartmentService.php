@@ -10,9 +10,13 @@ class DepartmentService
 {
     public function __construct(private DepartmentRepository $departmentRepository) {}
 
-    public function getAllDepartments(?string $search = null): LengthAwarePaginator
-    {
-        return $this->departmentRepository->getAll($search);
+    public function getAllDepartments(
+        ?string $search = null,
+        ?string $sort = null,
+        string $dir = 'asc',
+        int $perPage = 10
+    ): LengthAwarePaginator {
+        return $this->departmentRepository->getAll($search, $sort, $dir, $perPage);
     }
 
     public function findDepartment(int $departmentId): ?Departments

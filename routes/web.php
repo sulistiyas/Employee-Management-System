@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
             Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
             Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+            Route::delete('/roles-bulk', [RoleController::class, 'bulkDestroy'])->name('roles.bulk-destroy');
 
             Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');
             Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
