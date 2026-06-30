@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::statement('TRUNCATE TABLE roles, departments, positions, employees, users, leave_types RESTART IDENTITY CASCADE');
+        DB::statement('TRUNCATE TABLE roles, departments, positions, employees, users, leave_types,shifts RESTART IDENTITY CASCADE');
         $this->call([
             RoleSeeder::class,
             DepartmentSeeder::class,
@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             DepartmentAssignmentSeeder::class,
             UserSeeder::class,
             LeaveTypeSeeder::class,
+            ShiftSeeder::class,
         ]);
     }
 }
